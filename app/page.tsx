@@ -36,6 +36,10 @@ export default function LoginPage() {
 
       const data = await response.json();
 
+      if (data.token) {
+        localStorage.setItem("token", data.token); // Securely store JWT!
+      }
+
       toast.success("Login successful!");
 
       // Route based on role from actual backend response
