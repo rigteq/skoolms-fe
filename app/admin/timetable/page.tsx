@@ -15,9 +15,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function TimetablePage() {
     const router = useRouter();
+    const [showProfile, setShowProfile] = useState(false);
+
+    const handleLogout = () => {
+        router.push("/");
+    };
 
     return (
         <div className="flex h-screen bg-slate-50 font-sans">
@@ -70,11 +76,7 @@ export default function TimetablePage() {
                     </Link>
 
                 </nav>
-                <div className="p-4 border-t border-slate-100">
-                    <button onClick={() => router.push("/")} className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium">
-                        <LogOut className="w-5 h-5 mr-3" /> Logout
-                    </button>
-                </div>
+
             </aside>
 
             {/* Main Content */}
@@ -85,21 +87,48 @@ export default function TimetablePage() {
                         <Search className="w-4 h-4 text-slate-400 absolute left-3" />
                         <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
                     </div>
-                    <div className="flex items-center space-x-6">
-                        <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                    {/*Right Side bar Content Logout and Profile */}
+
+                    {/* Right Side */}
+                    <div className="flex items-center space-x-4">
+
+                        {/* Notification */}
+                        <button
+                            onClick={() => alert("No new notifications")}
+                            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
                             <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        <div className="flex items-center gap-3 border-l pl-6 border-slate-200 cursor-pointer">
-                            <div className="text-right hidden md:block">
-                                <p className="text-sm font-semibold text-slate-800">John Principal</p>
-                                <p className="text-xs text-slate-500">Greenwood High Admin</p>
+
+                        {/* Profile */}
+                        <div className="relative">
+                            <div
+                                onClick={() => setShowProfile(!showProfile)}
+                                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
+                            >
+                                Admin
                             </div>
-                            <div className="w-9 h-9 text-blue-800 font-bold bg-blue-100 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm hover:scale-105 transition-transform">
-                                JP
-                            </div>
+
+                            {showProfile && (
+                                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
+                                    <button
+                                        onClick={() => router.push("/profile")}
+                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                    >
+                                        Profile
+                                    </button>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
+
                 </header>
                 {/* Content */}
                 <div className="flex-1 overflow-auto p-8">
@@ -115,19 +144,19 @@ export default function TimetablePage() {
                             </button>
                         </div>
                     </div>
-                    
+
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div className="overflow-x-auto p-0">
                             <table className="w-full text-center text-sm text-slate-600 border-collapse">
                                 <thead>
                                     <tr>
                                         <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 w-32 font-bold text-slate-700">Day / Period</th>
-                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">1<br/><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">08:00 - 08:45</span></th>
-                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">2<br/><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">08:45 - 09:30</span></th>
-                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">3<br/><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">09:30 - 10:15</span></th>
-                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-100 text-slate-500 font-semibold uppercase tracking-widest text-xs">Break<br/><span className="text-xs font-medium mt-1 block">10:15 - 10:30</span></th>
-                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">4<br/><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">10:30 - 11:15</span></th>
-                                        <th className="p-4 border-b border-slate-200 bg-slate-50/80 font-semibold text-slate-700">5<br/><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">11:15 - 12:00</span></th>
+                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">1<br /><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">08:00 - 08:45</span></th>
+                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">2<br /><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">08:45 - 09:30</span></th>
+                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">3<br /><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">09:30 - 10:15</span></th>
+                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-100 text-slate-500 font-semibold uppercase tracking-widest text-xs">Break<br /><span className="text-xs font-medium mt-1 block">10:15 - 10:30</span></th>
+                                        <th className="p-4 border-b border-r border-slate-200 bg-slate-50/80 font-semibold text-slate-700">4<br /><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">10:30 - 11:15</span></th>
+                                        <th className="p-4 border-b border-slate-200 bg-slate-50/80 font-semibold text-slate-700">5<br /><span className="text-xs font-medium text-slate-500 mt-1 block tracking-wider">11:15 - 12:00</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
