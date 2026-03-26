@@ -1,7 +1,18 @@
 "use client";
-
-import { LogOut, Users, Settings, Briefcase, GraduationCap, Calendar, DollarSign, LayoutDashboard, Search, Bell } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  GraduationCap,
+  ClipboardCheck,
+  FileText,
+  Calendar,
+  DollarSign,
+  BarChart,
+  Settings, LogOut, Search, Bell
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
@@ -16,27 +27,47 @@ export default function AdminDashboard() {
           <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
         </div>
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          <a href="#" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
+
+          <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
             <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
           </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+
+          <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <Users className="w-5 h-5 mr-3" /> Teachers
+          </Link>
+
+          <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <BookOpen className="w-5 h-5 mr-3" /> Classes
+          </Link>
+
+          <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
             <GraduationCap className="w-5 h-5 mr-3" /> Students
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Users className="w-5 h-5 mr-3" /> Staff & Teachers
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+          </Link>
+
+          <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
+          </Link>
+
+          <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <FileText className="w-5 h-5 mr-3" /> Exams
+          </Link>
+
+          <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
             <Calendar className="w-5 h-5 mr-3" /> Timetable
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Briefcase className="w-5 h-5 mr-3" /> Exams & Results
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <DollarSign className="w-5 h-5 mr-3" /> Fees Management
-          </a>
-          <a href="#" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Settings className="w-5 h-5 mr-3" /> Configurations
-          </a>
+          </Link>
+
+          <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <DollarSign className="w-5 h-5 mr-3" /> Fees
+          </Link>
+
+          <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <BarChart className="w-5 h-5 mr-3" /> Reports
+          </Link>
+
+          <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
+            <Settings className="w-5 h-5 mr-3" /> Settings
+          </Link>
+
         </nav>
         <div className="p-4 border-t border-slate-100">
           <button onClick={() => router.push("/")} className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium">
