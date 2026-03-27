@@ -1,211 +1,101 @@
 "use client";
+
 import {
-    LayoutDashboard,
-    Users,
-    BookOpen,
-    GraduationCap,
-    ClipboardCheck,
-    FileText,
-    Calendar,
-    DollarSign,
-    BarChart,
-    Settings, LogOut, Search, Bell,
-    Plus, Edit, Trash2, Filter
+    Plus, Search, Filter, DollarSign
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function FeesPage() {
-    const router = useRouter();
-    const [showProfile, setShowProfile] = useState(false);
-
-    const handleLogout = () => {
-        router.push("/");
-    };
-
     return (
-        <div className="flex h-screen bg-slate-50 font-sans">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-                <div className="h-16 flex items-center px-6 border-b border-slate-100">
-                    <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
-                </div>
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-
-                    <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
-                        <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-                    </a>
-
-                    <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Users className="w-5 h-5 mr-3" /> Teachers
-                    </Link>
-
-                    <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BookOpen className="w-5 h-5 mr-3" /> Classes
-                    </Link>
-
-                    <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <GraduationCap className="w-5 h-5 mr-3" /> Students
-                    </Link>
-
-                    <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
-                    </Link>
-
-                    <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <FileText className="w-5 h-5 mr-3" /> Exams
-                    </Link>
-
-                    <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5 mr-3" /> Timetable
-                    </Link>
-
-                    <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <DollarSign className="w-5 h-5 mr-3" /> Fees
-                    </Link>
-
-                    <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BarChart className="w-5 h-5 mr-3" /> Reports
-                    </Link>
-
-                    <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Settings className="w-5 h-5 mr-3" /> Settings
-                    </Link>
-
-                </nav>
-
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-                    <div className="flex items-center w-96 relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-                        <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
+        <>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div className="flex items-center">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-emerald-100 mr-5">
+                        <DollarSign className="w-7 h-7" />
                     </div>
-                    {/*Right Side bar Content Logout and Profile */}
-
-                    {/* Right Side */}
-                    <div className="flex items-center space-x-4">
-
-                        {/* Notification */}
-                        <button
-                            onClick={() => alert("No new notifications")}
-                            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        {/* Profile */}
-                        <div className="relative">
-                            <div
-                                onClick={() => setShowProfile(!showProfile)}
-                                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
-                            >
-                                Admin
-                            </div>
-
-                            {showProfile && (
-                                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
-                                    <button
-                                        onClick={() => router.push("/profile")}
-                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                    >
-                                        Profile
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                </header>
-                {/* Content */}
-                <div className="flex-1 overflow-auto p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-2xl font-bold text-slate-800">Fees</h1>
-                        <button className="flex items-center px-4 py-2 bg-[#3b71ca] text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                            <Plus className="w-5 h-5 mr-2" /> Collect Fee
-                        </button>
-                    </div>
-
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div className="p-6 border-b border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-50/50">
-                            <div className="relative w-full md:w-80">
-                                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                                <input type="text" placeholder="Search by student name or invoice..." className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b71ca]/20 focus:border-[#3b71ca] transition-all bg-white" />
-                            </div>
-                            <button className="flex items-center px-4 py-2 border border-slate-200 text-slate-600 bg-white rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium w-full md:w-auto justify-center">
-                                <Filter className="w-4 h-4 mr-2" /> Filter
-                            </button>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm text-slate-600">
-                                <thead className="bg-slate-50 text-slate-500 border-b border-slate-200">
-                                    <tr>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">Student Info</th>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">Invoice ID</th>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">Status</th>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs">Amount</th>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs hidden md:table-cell">Due Date</th>
-                                        <th className="px-6 py-4 font-semibold uppercase tracking-wider text-xs text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {[1, 2, 3, 4, 5].map((item, index) => (
-                                        <tr key={item} className="hover:bg-slate-50/80 transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div>
-                                                    <p className="font-bold text-slate-800">Student Name {item}</p>
-                                                    <p className="text-xs font-medium text-slate-500 mt-1">Class 10A</p>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 font-mono font-medium text-xs text-slate-500">#INV-2026-00{item}</td>
-                                            <td className="px-6 py-4">
-                                                {index % 3 === 0 ? (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-red-50 text-red-700 border border-red-200 shadow-sm">
-                                                        Pending
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-green-50 text-green-700 border border-green-200 shadow-sm">
-                                                        Paid
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 font-bold text-slate-800">
-                                                ${(Math.random() * 500 + 100).toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4 font-medium text-slate-500 text-xs hidden md:table-cell">Oct {(item * 5) % 30 + 1}, 2026</td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button className="px-3 py-1.5 text-[#3b71ca] hover:bg-blue-50 hover:text-blue-800 font-semibold text-xs border border-transparent hover:border-blue-200 rounded-md transition-all">View Invoice</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="p-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-500 gap-4 bg-slate-50/50">
-                            <span>Showing 1 to 5 of 244 results</span>
-                            <div className="flex gap-1.5">
-                                <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white bg-transparent transition-colors font-medium">Previous</button>
-                                <button className="px-3 py-1.5 border border-transparent rounded-lg bg-[#3b71ca] shadow-sm text-white font-medium">1</button>
-                                <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white bg-transparent transition-colors font-medium">Next</button>
-                            </div>
-                        </div>
+                    <div>
+                        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none">Financial Management</h1>
+                        <p className="text-slate-500 text-sm mt-2 font-bold uppercase tracking-widest text-[10px]">Collect, track and manage student fees.</p>
                     </div>
                 </div>
+                <button className="flex items-center px-6 py-4 bg-[#3b71ca] text-white rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-blue-300 font-extrabold text-xs uppercase tracking-widest group">
+                    <Plus className="w-5 h-5 mr-3 group-hover:scale-125 transition-transform" /> Collect New Fee
+                </button>
+            </div>
 
-            </main>
-        </div>
+            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-200/50">
+                <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row gap-5 justify-between items-center bg-slate-50/20">
+                    <div className="relative w-full md:w-96">
+                        <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
+                        <input 
+                            type="text" 
+                            placeholder="Search by student name, ID or invoice number..." 
+                            className="w-full pl-12 pr-6 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] transition-all font-bold placeholder:text-slate-400 shadow-sm" 
+                        />
+                    </div>
+                    <div className="flex gap-3 w-full md:w-auto">
+                        <button className="flex-1 md:flex-none flex items-center px-6 py-3.5 border border-slate-200 text-slate-600 bg-white rounded-2xl hover:bg-slate-50 transition-all text-xs font-black uppercase tracking-widest shadow-sm">
+                            <Filter className="w-4 h-4 mr-3" /> Advanced Filters
+                        </button>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-400 border-b border-slate-50">
+                            <tr>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] leading-none">Student Identification</th>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] leading-none">Invoice ID</th>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] leading-none">Status</th>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] leading-none">Amount</th>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] leading-none hidden md:table-cell">Due Date</th>
+                                <th className="px-8 py-5 font-black text-[10px] uppercase tracking-[0.2em] text-right leading-none">Record</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[1, 2, 3, 4, 5, 6].map((item, index) => (
+                                <tr key={item} className="hover:bg-slate-50/50 transition-colors group">
+                                    <td className="px-8 py-6">
+                                        <div className="flex flex-col">
+                                            <p className="font-black text-slate-800 text-base leading-none">Student Name {item}</p>
+                                            <p className="text-[10px] font-extrabold text-[#3b71ca] mt-2 uppercase tracking-widest">Class 10-A (Science)</p>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <span className="font-black text-slate-400 text-xs tracking-tighter bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">#INV-2026-00{item}</span>
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        {index % 3 === 0 ? (
+                                            <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black bg-rose-50 text-rose-600 border border-rose-100 shadow-sm uppercase tracking-widest">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mr-2 animate-pulse"></span>
+                                                Pending
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm uppercase tracking-widest">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                                                Paid
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-8 py-6">
+                                        <span className="font-black text-slate-800 text-base tabular-nums tracking-tighter">${(Math.random() * 500 + 100).toFixed(2)}</span>
+                                    </td>
+                                    <td className="px-8 py-6 font-bold text-slate-400 text-xs hidden md:table-cell tracking-tighter uppercase">Oct {(item * 5) % 30 + 1}, 2026</td>
+                                    <td className="px-8 py-6 text-right">
+                                        <button className="px-4 py-2 text-[#3b71ca] bg-blue-50 hover:bg-[#3b71ca] hover:text-white font-black text-[10px] rounded-xl transition-all border border-blue-100 shadow-sm uppercase tracking-widest">View PDF</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="px-8 py-6 border-t border-slate-50 bg-slate-50/20 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 font-black uppercase tracking-widest gap-4">
+                    <span>Account entries: 244 records listed</span>
+                    <div className="flex gap-2">
+                        <button className="px-4 py-2 border border-slate-200 rounded-xl hover:bg-white transition-colors bg-white/50">Prev</button>
+                        <button className="px-4 py-2 border border-blue-200 rounded-xl bg-[#3b71ca] shadow-md text-white">1</button>
+                        <button className="px-4 py-2 border border-slate-200 rounded-xl hover:bg-white transition-colors bg-white/50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }

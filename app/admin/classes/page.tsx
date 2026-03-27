@@ -1,189 +1,185 @@
 "use client";
+
 import {
-    LayoutDashboard,
-    Users,
-    BookOpen,
     GraduationCap,
-    ClipboardCheck,
-    FileText,
-    Calendar,
-    DollarSign,
-    BarChart,
-    Settings, LogOut, Search, Bell,
-    Plus, Edit, Trash2, Filter
+    BookOpen,
+    Users,
+    Search,
+    Plus, Edit, Trash2
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ClassesPage() {
-    const router = useRouter();
-    const [showProfile, setShowProfile] = useState(false);
-
-    const handleLogout = () => {
-        router.push("/");
-    };
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <div className="flex h-screen bg-slate-50 font-sans">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-                <div className="h-16 flex items-center px-6 border-b border-slate-100">
-                    <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
+        <>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Classes Management</h1>
+                    <p className="text-slate-500 text-sm mt-1 font-medium">Manage class structures, academic years, and assigned teachers.</p>
                 </div>
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center justify-center px-5 py-2.5 bg-[#3b71ca] text-white rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-200/50 font-bold text-sm group"
+                >
+                    <Plus className="w-4.5 h-4.5 mr-2 group-hover:rotate-90 transition-transform" />
+                    Add New Class
+                </button>
+            </div>
 
-                    <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
-                        <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-                    </a>
-
-                    <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Users className="w-5 h-5 mr-3" /> Teachers
-                    </Link>
-
-                    <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BookOpen className="w-5 h-5 mr-3" /> Classes
-                    </Link>
-
-                    <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <GraduationCap className="w-5 h-5 mr-3" /> Students
-                    </Link>
-
-                    <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
-                    </Link>
-
-                    <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <FileText className="w-5 h-5 mr-3" /> Exams
-                    </Link>
-
-                    <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5 mr-3" /> Timetable
-                    </Link>
-
-                    <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <DollarSign className="w-5 h-5 mr-3" /> Fees
-                    </Link>
-
-                    <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BarChart className="w-5 h-5 mr-3" /> Reports
-                    </Link>
-
-                    <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Settings className="w-5 h-5 mr-3" /> Settings
-                    </Link>
-
-                </nav>
-
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-                    <div className="flex items-center w-96 relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-                        <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
+            {/* Search & Stats */}
+            <div className="flex flex-col md:flex-row gap-6 mb-8">
+                <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                    <input
+                        type="text"
+                        placeholder="Filter classes by name or teacher..."
+                        className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all shadow-sm font-medium"
+                    />
+                </div>
+                <div className="flex gap-4">
+                    <div className="px-5 py-2 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#3b71ca] flex items-center justify-center">
+                            <BookOpen className="w-4 h-4" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Total Classes</p>
+                            <p className="text-sm font-bold text-slate-800">12 Active</p>
+                        </div>
                     </div>
-                    {/*Right Side bar Content Logout and Profile */}
+                </div>
+            </div>
 
-                    {/* Right Side */}
-                    <div className="flex items-center space-x-4">
-
-                        {/* Notification */}
-                        <button
-                            onClick={() => alert("No new notifications")}
-                            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        {/* Profile */}
-                        <div className="relative">
-                            <div
-                                onClick={() => setShowProfile(!showProfile)}
-                                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
-                            >
-                                Admin
+            {/* Classes Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[
+                    { name: "Class 10-A", year: "2024-25", teacher: "Rahul Sharma", students: 35, bg: "from-blue-500 to-indigo-600" },
+                    { name: "Class 11-B", year: "2024-25", teacher: "Amit Kumar", students: 40, bg: "from-emerald-500 to-teal-600" },
+                    { name: "Class 12-C", year: "2024-25", teacher: "Neha Singh", students: 30, bg: "from-amber-500 to-orange-600" },
+                    { name: "Class 9-D", year: "2024-25", teacher: "John Doe", students: 38, bg: "from-rose-500 to-pink-600" },
+                    { name: "Class 10-B", year: "2023-24", teacher: "Rahul Sharma", students: 32, bg: "from-violet-500 to-purple-600" },
+                    { name: "Class 11-A", year: "2023-24", teacher: "Amit Kumar", students: 36, bg: "from-cyan-500 to-sky-600" },
+                ].map((cls, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-[#3b71ca]/30 hover:shadow-xl transition-all group overflow-hidden flex flex-col">
+                        <div className={`h-1.5 bg-gradient-to-r ${cls.bg}`}></div>
+                        <div className="p-6">
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-[#3b71ca] group-hover:bg-blue-50 group-hover:border-blue-100 transition-all shadow-sm">
+                                    <GraduationCap className="w-6 h-6" />
+                                </div>
+                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Edit"><Edit className="w-4 h-4" /></button>
+                                    <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                                </div>
                             </div>
 
-                            {showProfile && (
-                                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
-                                    <button
-                                        onClick={() => router.push("/profile")}
-                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                    >
-                                        Profile
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                        Logout
-                                    </button>
+                            <h3 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-[#3b71ca] transition-colors tracking-tight">{cls.name}</h3>
+                            <div className="inline-flex items-center px-2.5 py-1 bg-slate-100/80 text-slate-500 rounded-lg text-[10px] font-extrabold uppercase tracking-widest mb-6 border border-slate-200/50">
+                                Batch {cls.year}
+                            </div>
+
+                            <div className="space-y-4 pt-4 border-t border-slate-50">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-1.5">
+                                        <Users className="w-3.5 h-3.5" /> Class Teacher
+                                    </span>
+                                    <span className="text-sm font-bold text-slate-700">{cls.teacher}</span>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                </header>
-
-                {/* Content */}
-                <div className="flex-1 overflow-auto p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-2xl font-bold text-slate-800">Classes</h1>
-                        <button className="flex items-center px-4 py-2 bg-[#3b71ca] text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                            <Plus className="w-5 h-5 mr-2" /> Add Class
-                        </button>
-                    </div>
-
-                    <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
-                        <div className="relative w-full md:w-80">
-                            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                            <input type="text" placeholder="Search classes..." className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#3b71ca]/20 focus:border-[#3b71ca] transition-all" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {[1, 2, 3, 4, 5, 6].map((item) => (
-                            <div key={item} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-[#3b71ca]/30 hover:shadow-md transition-all group flex flex-col">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 flex items-center justify-center text-[#3b71ca] shadow-sm">
-                                        <BookOpen className="w-6 h-6" />
-                                    </div>
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors"><Edit className="w-4 h-4" /></button>
-                                        <button className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                </div>
-
-                                <h3 className="text-xl font-bold text-slate-800 mb-1">Class {6 + item}A</h3>
-                                <p className="text-sm font-medium text-[#3b71ca] mb-5 bg-blue-50 self-start px-2.5 py-1 rounded-md">Academic Year 2026-2027</p>
-
-                                <div className="space-y-4 mt-auto">
-                                    <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
-                                        <span className="text-slate-500 font-medium">Class Teacher</span>
-                                        <span className="font-semibold text-slate-800">John Doe</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-3">
-                                        <span className="text-slate-500 font-medium">Total Students</span>
-                                        <div className="flex items-center">
-                                            <Users className="w-3.5 h-3.5 mr-1.5 text-slate-400" />
-                                            <span className="font-semibold text-slate-800">32</span>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-1.5">
+                                        <Users className="w-3.5 h-3.5" /> Total Students
+                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]" style={{ width: `${(cls.students/40)*100}%` }}></div>
                                         </div>
+                                        <span className="text-sm font-bold text-slate-800">{cls.students}</span>
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Add Class Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div 
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity"
+                        onClick={() => setIsModalOpen(false)}
+                    ></div>
+
+                    <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-100">
+                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800 tracking-tight">Assign New Class</h2>
+                                <p className="text-slate-500 text-xs mt-0.5 font-medium tracking-tight">Define a new academic structure.</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsModalOpen(false)}
+                                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 shadow-sm"
+                            >
+                                <Plus className="w-5 h-5 rotate-45" />
+                            </button>
+                        </div>
+
+                        <form className="p-8 space-y-6" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Class Name <span className="text-red-500">*</span></label>
+                                    <input 
+                                        required 
+                                        type="text" 
+                                        placeholder="e.g. Class 10-A" 
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all font-medium"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Academic Year <span className="text-red-500">*</span></label>
+                                    <select 
+                                        required 
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer"
+                                    >
+                                        <option value="">Select Year</option>
+                                        <option value="2023-24">2023-24</option>
+                                        <option value="2024-25">2024-25</option>
+                                        <option value="2025-26">2025-26</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Assign Class Teacher (Optional)</label>
+                                    <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
+                                        <option value="">No Teacher Assigned</option>
+                                        {["Rahul Sharma", "Amit Kumar", "Neha Singh"].map(t => (
+                                            <option key={t} value={t}>{t}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 flex items-center justify-end gap-3">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="px-6 py-3 text-slate-600 font-bold text-sm hover:bg-slate-50 rounded-xl transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="flex-1 max-w-[160px] py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
+                                >
+                                    Create Class
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
-
-            </main>
-        </div>
+            )}
+        </>
     );
 }
