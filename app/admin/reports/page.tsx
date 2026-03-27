@@ -1,239 +1,170 @@
 "use client";
+
 import {
-    LayoutDashboard,
     Users,
-    BookOpen,
     GraduationCap,
     ClipboardCheck,
-    FileText,
-    Calendar,
     DollarSign,
-    BarChart,
-    Settings, LogOut, Search, Bell,
-    Download
+    Download,
+    TrendingUp,
+    TrendingDown,
+    Activity,
+    PieChart
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function ReportsPage() {
-    const router = useRouter();
-    const [showProfile, setShowProfile] = useState(false);
-
-    const handleLogout = () => {
-        router.push("/");
-    };
     return (
-        <div className="flex h-screen bg-slate-50 font-sans">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-                <div className="h-16 flex items-center px-6 border-b border-slate-100">
-                    <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
+        <>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div className="flex items-center">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-violet-600 to-indigo-400 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-100 mr-5">
+                        <PieChart className="w-7 h-7" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none">Analytics Dashboard</h1>
+                        <p className="text-slate-500 text-sm mt-2 font-bold uppercase tracking-widest text-[10px]">Comprehensive school performance reports.</p>
+                    </div>
                 </div>
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button className="flex items-center px-6 py-4 bg-white border-2 border-slate-100 text-slate-700 rounded-2xl hover:bg-slate-50 transition-all shadow-sm font-extrabold text-xs uppercase tracking-widest group">
+                    <Download className="w-4 h-4 mr-3 group-hover:translate-y-1 transition-transform" /> Export Analytics PDF
+                </button>
+            </div>
 
-                    <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
-                        <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-                    </a>
-
-                    <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Users className="w-5 h-5 mr-3" /> Teachers
-                    </Link>
-
-                    <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BookOpen className="w-5 h-5 mr-3" /> Classes
-                    </Link>
-
-                    <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <GraduationCap className="w-5 h-5 mr-3" /> Students
-                    </Link>
-
-                    <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
-                    </Link>
-
-                    <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <FileText className="w-5 h-5 mr-3" /> Exams
-                    </Link>
-
-                    <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5 mr-3" /> Timetable
-                    </Link>
-
-                    <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <DollarSign className="w-5 h-5 mr-3" /> Fees
-                    </Link>
-
-                    <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BarChart className="w-5 h-5 mr-3" /> Reports
-                    </Link>
-
-                    <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Settings className="w-5 h-5 mr-3" /> Settings
-                    </Link>
-
-                </nav>
-
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-                    <div className="flex items-center w-96 relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-                        <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
-                    </div>
-                    {/*Right Side bar Content Logout and Profile */}
-
-                    {/* Right Side */}
-                    <div className="flex items-center space-x-4">
-
-                        {/* Notification */}
-                        <button
-                            onClick={() => alert("No new notifications")}
-                            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        {/* Profile */}
-                        <div className="relative">
-                            <div
-                                onClick={() => setShowProfile(!showProfile)}
-                                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
-                            >
-                                Admin
-                            </div>
-
-                            {showProfile && (
-                                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
-                                    <button
-                                        onClick={() => router.push("/profile")}
-                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                    >
-                                        Profile
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                {/* Stats Cards */}
+                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-100/50 transition-all group relative overflow-hidden">
+                    <div className="flex justify-between items-start mb-6">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Total Students</p>
+                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">1,248</h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#3b71ca] border border-blue-100 shadow-sm leading-none">
+                            <Users className="w-6 h-6" />
                         </div>
                     </div>
-
-                </header>
-                {/* Content */}
-                <div className="flex-1 overflow-auto p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-2xl font-bold text-slate-800">Reports Overview</h1>
-                        <button className="flex items-center px-4 py-2 border border-slate-200 bg-white text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium">
-                            <Download className="w-4 h-4 mr-2" /> Export PDF
-                        </button>
+                    <div className="flex items-center">
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
+                            <TrendingUp className="w-3 h-3 mr-1" /> 12.5%
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
                     </div>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {/* Stats Cards */}
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-[#3b71ca]/30 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500 mb-1">Total Students</p>
-                                    <h3 className="text-3xl font-bold text-slate-800">1,248</h3>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
-                                    <Users className="w-6 h-6" />
-                                </div>
-                            </div>
-                            <p className="text-xs font-medium text-emerald-600 flex items-center bg-emerald-50 w-fit px-2 py-1 rounded-md"><span className="mr-1">↑ 12%</span> <span className="text-emerald-700/70 font-medium ml-1">vs last month</span></p>
+                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-100/50 transition-all group relative overflow-hidden">
+                    <div className="flex justify-between items-start mb-6">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Total Faculty</p>
+                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">84</h3>
                         </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-indigo-500/30 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500 mb-1">Total Teachers</p>
-                                    <h3 className="text-3xl font-bold text-slate-800">84</h3>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                                    <GraduationCap className="w-6 h-6" />
-                                </div>
-                            </div>
-                            <p className="text-xs font-medium text-emerald-600 flex items-center bg-emerald-50 w-fit px-2 py-1 rounded-md"><span className="mr-1">↑ 2%</span> <span className="text-emerald-700/70 font-medium ml-1">vs last month</span></p>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-emerald-500/30 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500 mb-1">Avg Attendance</p>
-                                    <h3 className="text-3xl font-bold text-slate-800">94.2%</h3>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
-                                    <ClipboardCheck className="w-6 h-6" />
-                                </div>
-                            </div>
-                            <p className="text-xs font-medium text-red-600 flex items-center bg-red-50 w-fit px-2 py-1 rounded-md"><span className="mr-1">↓ 1.5%</span> <span className="text-red-700/70 font-medium ml-1">vs last month</span></p>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-amber-500/30 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500 mb-1">Total Revenue</p>
-                                    <h3 className="text-3xl font-bold text-slate-800">$124.5k</h3>
-                                </div>
-                                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
-                                    <DollarSign className="w-6 h-6" />
-                                </div>
-                            </div>
-                            <p className="text-xs font-medium text-emerald-600 flex items-center bg-emerald-50 w-fit px-2 py-1 rounded-md"><span className="mr-1">↑ 8.4%</span> <span className="text-emerald-700/70 font-medium ml-1">vs last month</span></p>
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100 shadow-sm leading-none">
+                            <GraduationCap className="w-6 h-6" />
                         </div>
                     </div>
+                    <div className="flex items-center">
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
+                            <TrendingUp className="w-3 h-3 mr-1" /> 2.1%
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
+                    </div>
+                </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 className="text-lg font-bold text-slate-800 mb-6">Revenue Analytics</h3>
-                            <div className="h-64 flex items-end gap-2 justify-between">
-                                {[30, 40, 35, 50, 45, 60, 55, 70, 65, 80, 75, 90].map((h, i) => (
-                                    <div key={i} className="w-full bg-blue-100 rounded-t-md hover:bg-[#3b71ca] transition-colors relative group cursor-pointer" style={{ height: `${h}%` }}>
-                                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1.5 px-2.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity font-medium z-10 pointer-events-none">${h}k</div>
-                                    </div>
-                                ))}
+                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-emerald-100/50 transition-all group relative overflow-hidden">
+                    <div className="flex justify-between items-start mb-6">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Attendance</p>
+                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">94.2%</h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm leading-none">
+                            <ClipboardCheck className="w-6 h-6" />
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-rose-100 uppercase tracking-widest">
+                            <TrendingDown className="w-3 h-3 mr-1" /> 1.5%
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
+                    </div>
+                </div>
+
+                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-amber-100/50 transition-all group relative overflow-hidden">
+                    <div className="flex justify-between items-start mb-6">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Collection</p>
+                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">$124k</h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100 shadow-sm leading-none">
+                            <DollarSign className="w-6 h-6" />
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
+                            <TrendingUp className="w-3 h-3 mr-1" /> 8.4%
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div className="flex items-center mb-10">
+                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-[#3b71ca] mr-4 shadow-sm border border-blue-100">
+                            <Activity className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Revenue Insights (2026)</h3>
+                    </div>
+                    <div className="h-64 flex items-end gap-3 justify-between pb-4">
+                        {[30, 45, 35, 60, 50, 75, 65, 85, 70, 95, 80, 100].map((h, i) => (
+                            <div key={i} className="flex-1 min-w-[12px] group relative h-full flex items-end">
+                                <div 
+                                    className="w-full bg-slate-50 rounded-full hover:bg-gradient-to-t hover:from-[#3b71ca] hover:to-blue-400 transition-all duration-500 cursor-pointer border border-slate-100 group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-blue-200" 
+                                    style={{ height: `${h}%` }}
+                                ></div>
+                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-black py-2 px-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 z-20 pointer-events-none whitespace-nowrap">
+                                    ${h}k Monthly
+                                </div>
                             </div>
-                            <div className="flex justify-between mt-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
-                                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                        ))}
+                    </div>
+                    <div className="flex justify-between mt-8 text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] border-t border-slate-50 pt-8">
+                        <span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span>
+                    </div>
+                </div>
+
+                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 relative">
+                    <div className="flex items-center mb-10">
+                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mr-4 shadow-sm border border-emerald-100">
+                            <PieChart className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Attendance Distribution</h3>
+                    </div>
+                    <div className="flex flex-col items-center justify-center">
+                        <div className="w-56 h-56 rounded-full border-[32px] border-[#3b71ca] relative flex justify-center items-center shadow-[inset_0_4px_15px_rgba(0,0,0,0.05)] ring-[24px] ring-slate-50">
+                            <div className="absolute w-56 h-56 rounded-full border-[32px] border-emerald-400 border-l-transparent border-b-transparent transform rotate-[45deg] shadow-lg"></div>
+                            <div className="text-center z-10 bg-white w-36 h-36 rounded-full flex flex-col justify-center items-center shadow-2xl border border-slate-50">
+                                <p className="text-4xl font-black text-slate-800 leading-none">94%</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 leading-none">Student Success</p>
                             </div>
                         </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                            <h3 className="text-lg font-bold text-slate-800 mb-6">Attendance Overview</h3>
-                            <div className="h-64 flex items-end gap-4 justify-around mt-4">
-                                <div className="w-48 h-48 rounded-full border-[24px] border-[#3b71ca] relative flex justify-center items-center shadow-inner">
-                                    <div className="absolute w-48 h-48 rounded-full border-[24px] border-emerald-400 border-l-transparent border-b-transparent transform rotate-45"></div>
-                                    <div className="text-center z-10 bg-white w-32 h-32 rounded-full flex flex-col justify-center items-center shadow-sm">
-                                        <p className="text-3xl font-bold text-slate-800">94%</p>
-                                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-1">Present</p>
-                                    </div>
+                        <div className="grid grid-cols-2 gap-4 w-full mt-16 px-4">
+                            <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm flex items-center group hover:bg-white transition-all cursor-default overflow-hidden relative">
+                                <div className="absolute left-0 top-0 w-1.5 h-full bg-[#3b71ca]"></div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Present Rate</p>
+                                    <p className="text-xl font-black text-slate-800 leading-none">94.2%</p>
                                 </div>
                             </div>
-                            <div className="flex justify-center gap-8 mt-8 bg-slate-50 py-4 rounded-lg border border-slate-100">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-[#3b71ca] shadow-sm"></div>
-                                    <span className="text-sm text-slate-700 font-semibold">Present <span className="text-slate-500 font-normal ml-1">(94%)</span></span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></div>
-                                    <span className="text-sm text-slate-700 font-semibold">Absent <span className="text-slate-500 font-normal ml-1">(6%)</span></span>
+                            <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm flex items-center group hover:bg-white transition-all cursor-default overflow-hidden relative">
+                                <div className="absolute left-0 top-0 w-1.5 h-full bg-emerald-400"></div>
+                                <div>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Absent Rate</p>
+                                    <p className="text-xl font-black text-slate-800 leading-none">5.8%</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            </main>
-        </div>
+            </div>
+        </>
     );
 }

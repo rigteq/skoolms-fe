@@ -1,179 +1,64 @@
 "use client";
+
 import {
-    LayoutDashboard,
-    Users,
-    BookOpen,
-    GraduationCap,
-    ClipboardCheck,
     FileText,
     Calendar,
-    DollarSign,
-    BarChart,
-    Settings, LogOut, Search, Bell,
-    Plus, Edit, Trash2, Filter
+    Users,
+    Plus, Edit
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function ExamsPage() {
-    const router = useRouter();
-    const [showProfile, setShowProfile] = useState(false);
-
-    const handleLogout = () => {
-        router.push("/");
-    };
-
     return (
-        <div className="flex h-screen bg-slate-50 font-sans">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-                <div className="h-16 flex items-center px-6 border-b border-slate-100">
-                    <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
+        <>
+            <div className="flex justify-between items-center mb-10">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Examination Hub</h1>
+                    <p className="text-slate-500 text-sm mt-1 font-semibold italic">Schedule, manage, and track school-wide examinations.</p>
                 </div>
-                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button className="flex items-center px-5 py-3 bg-[#3b71ca] text-white rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 hover:shadow-blue-300 font-bold text-sm tracking-wide">
+                    <Plus className="w-5 h-5 mr-2" /> Schedule New Exam
+                </button>
+            </div>
 
-                    <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
-                        <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-                    </a>
-
-                    <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Users className="w-5 h-5 mr-3" /> Teachers
-                    </Link>
-
-                    <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BookOpen className="w-5 h-5 mr-3" /> Classes
-                    </Link>
-
-                    <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <GraduationCap className="w-5 h-5 mr-3" /> Students
-                    </Link>
-
-                    <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
-                    </Link>
-
-                    <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <FileText className="w-5 h-5 mr-3" /> Exams
-                    </Link>
-
-                    <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Calendar className="w-5 h-5 mr-3" /> Timetable
-                    </Link>
-
-                    <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <DollarSign className="w-5 h-5 mr-3" /> Fees
-                    </Link>
-
-                    <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <BarChart className="w-5 h-5 mr-3" /> Reports
-                    </Link>
-
-                    <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-                        <Settings className="w-5 h-5 mr-3" /> Settings
-                    </Link>
-
-                </nav>
-
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-                    <div className="flex items-center w-96 relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-                        <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
-                    </div>
-                    {/*Right Side bar Content Logout and Profile */}
-
-                    {/* Right Side */}
-                    <div className="flex items-center space-x-4">
-
-                        {/* Notification */}
-                        <button
-                            onClick={() => alert("No new notifications")}
-                            className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
-                        >
-                            <Bell className="w-5 h-5" />
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-
-                        {/* Profile */}
-                        <div className="relative">
-                            <div
-                                onClick={() => setShowProfile(!showProfile)}
-                                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
-                            >
-                                Admin
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {[1, 2, 3, 4, 5, 6].map(item => (
+                    <div key={item} className="bg-white p-7 rounded-3xl shadow-sm border border-slate-100 hover:border-[#3b71ca]/30 hover:shadow-xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-50/50 to-transparent rounded-bl-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
+                        
+                        <div className="flex justify-between items-start mb-6 relative">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 leading-none">
+                                <FileText className="w-7 h-7" />
                             </div>
+                            <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full font-extrabold text-[10px] border border-emerald-100 shadow-sm uppercase tracking-widest leading-none">Status: Upcoming</span>
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-[#3b71ca] transition-colors">Mid-Term Examination {item}</h3>
+                        <div className="inline-flex px-3 py-1 bg-blue-50 text-[#3b71ca] rounded-lg text-[10px] font-extrabold uppercase tracking-widest border border-blue-100 mb-6">Class 10-A (Science)</div>
 
-                            {showProfile && (
-                                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
-                                    <button
-                                        onClick={() => router.push("/profile")}
-                                        className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                    >
-                                        Profile
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                        Logout
-                                    </button>
+                        <div className="space-y-4 mb-8">
+                            <div className="flex items-center text-sm">
+                                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center mr-3 border border-slate-100">
+                                    <Calendar className="w-4 h-4 text-slate-400" />
                                 </div>
-                            )}
+                                <span className="font-bold text-slate-600">Oct 15, 2026 - 09:00 AM</span>
+                            </div>
+                            <div className="flex items-center text-sm">
+                                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center mr-3 border border-slate-100">
+                                    <Users className="w-4 h-4 text-slate-400" />
+                                </div>
+                                <span className="font-bold text-slate-600">45 Students • Hall A-12</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-slate-50 flex gap-3 relative">
+                            <button className="flex-1 px-4 py-3 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded-xl text-xs font-bold transition-all border border-slate-100 flex items-center justify-center uppercase tracking-widest">
+                                <Edit className="w-3.5 h-3.5 mr-2" /> Edit
+                            </button>
+                            <button className="flex-2 px-6 py-3 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-xl text-xs font-extrabold transition-all border border-indigo-100 uppercase tracking-widest shadow-sm">Details</button>
                         </div>
                     </div>
-
-                </header>
-
-
-                {/* Content */}
-                <div className="flex-1 overflow-auto p-8">
-                    <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-2xl font-bold text-slate-800">Exams</h1>
-                        <button className="flex items-center px-4 py-2 bg-[#3b71ca] text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-                            <Plus className="w-5 h-5 mr-2" /> Add Exam
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {[1, 2, 3, 4, 5].map(item => (
-                            <div key={item} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:border-[#3b71ca]/30 hover:shadow-md transition-all group">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-sm">
-                                        <FileText className="w-6 h-6" />
-                                    </div>
-                                    <span className="px-3 py-1 bg-green-50 text-green-700 rounded-md font-bold text-xs border border-green-200 shadow-sm">Upcoming</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-800 mb-1">Mid-Term Examination {item}</h3>
-                                <p className="text-sm font-medium text-[#3b71ca] mb-5 bg-blue-50 self-start px-2.5 py-1 rounded-md max-w-max">Class 10A</p>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center text-sm text-slate-600">
-                                        <Calendar className="w-4 h-4 mr-2 text-slate-400" />
-                                        <span className="font-medium text-slate-700">Starts: Oct 15, 2026</span>
-                                    </div>
-                                    <div className="flex items-center text-sm text-slate-600">
-                                        <Users className="w-4 h-4 mr-2 text-slate-400" />
-                                        <span className="font-medium text-slate-700">45 Students Enrolled</span>
-                                    </div>
-                                </div>
-                                <div className="mt-6 pt-5 border-t border-slate-100 flex gap-3">
-                                    <button className="flex-1 px-4 py-2.5 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg text-sm font-semibold transition-colors border border-slate-200 flex items-center justify-center">
-                                        <Edit className="w-4 h-4 mr-1.5" /> Edit
-                                    </button>
-                                    <button className="flex-1 px-4 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-semibold transition-colors border border-indigo-100">View Details</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </main>
-        </div>
+                ))}
+            </div>
+        </>
     );
 }

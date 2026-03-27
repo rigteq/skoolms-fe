@@ -1,225 +1,241 @@
 "use client";
-import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  GraduationCap,
-  ClipboardCheck,
-  FileText,
-  Calendar,
-  DollarSign,
-  BarChart,
-  Settings, LogOut, Search, Bell
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { useState } from "react";
+import { Plus } from "lucide-react";
 
 export default function AdminDashboard() {
-  const router = useRouter();
-  const [showProfile, setShowProfile] = useState(false);
-
-  const handleLogout = () => {
-    // add logout logic here
-    router.push("/");
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-slate-100">
-          <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-          <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
+    <>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Admin Overview</h1>
+        <div className="space-x-4">
+          <button className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition shadow-sm">Generate Reports</button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-[#3b71ca] text-white rounded-lg shadow-md hover:bg-blue-700 transition font-medium text-sm">+ Add New Student</button>
         </div>
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      </div>
 
-          <a href="/admin" className="flex items-center px-4 py-3 bg-[#3b71ca]/10 text-[#3b71ca] rounded-lg font-medium">
-            <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
-          </a>
+      {/* Add Student Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity"
+            onClick={() => setIsModalOpen(false)}
+          ></div>
 
-          <Link href="/admin/teachers" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Users className="w-5 h-5 mr-3" /> Teachers
-          </Link>
-
-          <Link href="/admin/classes" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <BookOpen className="w-5 h-5 mr-3" /> Classes
-          </Link>
-
-          <Link href="/admin/students" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <GraduationCap className="w-5 h-5 mr-3" /> Students
-          </Link>
-
-          <Link href="/admin/attendance" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <ClipboardCheck className="w-5 h-5 mr-3" /> Attendance
-          </Link>
-
-          <Link href="/admin/exams" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <FileText className="w-5 h-5 mr-3" /> Exams
-          </Link>
-
-          <Link href="/admin/timetable" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Calendar className="w-5 h-5 mr-3" /> Timetable
-          </Link>
-
-          <Link href="/admin/fees" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <DollarSign className="w-5 h-5 mr-3" /> Fees
-          </Link>
-
-          <Link href="/admin/reports" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <BarChart className="w-5 h-5 mr-3" /> Reports
-          </Link>
-
-          <Link href="/admin/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors">
-            <Settings className="w-5 h-5 mr-3" /> Settings
-          </Link>
-
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
-          <div className="flex items-center w-96 relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3" />
-            <input type="text" placeholder="Search student by ID or Name..." className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all" />
-          </div>
-          {/*Right Side bar Content Logout and Profile */}
-
-          {/* Right Side */}
-          <div className="flex items-center space-x-4">
-
-            {/* Notification */}
-            <button
-              onClick={() => alert("No new notifications")}
-              className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            {/* Profile */}
-            <div className="relative">
-              <div
-                onClick={() => setShowProfile(!showProfile)}
-                className="cursor-pointer px-3 py-1 rounded-full bg-gradient-to-tr from-[#4CAF50] to-[#2E7D32] text-white flex items-center justify-center font-bold text-sm shadow-md"
+          <div className="relative bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh] border border-slate-100">
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800 tracking-tight">Add New Student</h2>
+                <p className="text-slate-500 text-xs mt-0.5 font-medium tracking-tight">Register a new student and parent portal access.</p>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 shadow-sm"
               >
-                Admin
-              </div>
+                <Plus className="w-5 h-5 rotate-45" />
+              </button>
+            </div>
 
-              {showProfile && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-20">
-                  <button
-                    onClick={() => router.push("/profile")}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    Profile
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    Logout
-                  </button>
+            <form className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+              {/* Basic Information */}
+              <section>
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                  <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Basic Information</h3>
                 </div>
-              )}
-            </div>
-          </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
+                    <input required type="text" placeholder="e.g. Michael Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email (Optional)</label>
+                    <input type="email" placeholder="e.g. michael@student.edu" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Phone Number <span className="text-red-500">*</span></label>
+                    <input required type="tel" placeholder="e.g. +1 234-567-890" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Date of Birth</label>
+                    <input type="date" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 font-bold cursor-pointer" />
+                  </div>
+                </div>
+              </section>
 
-        </header>
-
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-slate-800">Admin Overview</h1>
-            <div className="space-x-4">
-              <button className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition">Generate Reports</button>
-              <button className="px-4 py-2 bg-[#3b71ca] text-white rounded-lg shadow hover:bg-blue-700 transition font-medium text-sm">+ Add New Student</button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {[
-              { label: "Total Students", value: "3,248" },
-              { label: "Total Staff", value: "184" },
-              { label: "Pending Fees", value: "$45.2K", textClass: "text-red-500" },
-              { label: "Attendance Today", value: "96.4%", textClass: "text-green-500" }
-            ].map((stat, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
-                <span className="text-slate-500 text-sm font-medium">{stat.label}</span>
-                <span className={`text-3xl font-bold mt-3 ${stat.textClass || 'text-slate-800'}`}>
-                  {stat.value}
-                </span>
+              {/* Academic & Parent Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <section>
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Academic</h3>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Assigned Class <span className="text-red-500">*</span></label>
+                    <select required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
+                      <option value="">Select Class</option>
+                      <option value="10">Class 10</option>
+                      <option value="11">Class 11</option>
+                      <option value="12">Class 12</option>
+                    </select>
+                  </div>
+                </section>
+                <section>
+                  <div className="flex items-center gap-2 mb-6">
+                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Parent Info</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Name <span className="text-red-500">*</span></label>
+                      <input required type="text" placeholder="e.g. Robert Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Phone <span className="text-red-500">*</span></label>
+                      <input required type="tel" placeholder="e.g. +1 987-654-321" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                    </div>
+                  </div>
+                </section>
               </div>
+
+              {/* Address Details */}
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Address Details</h3>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#3b71ca] focus:ring-[#3b71ca]/20 cursor-pointer" />
+                    <span className="text-[10px] font-extrabold text-slate-500 group-hover:text-slate-700 transition-colors uppercase tracking-tight">Same as Current</span>
+                  </label>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Current Address <span className="text-red-500">*</span></label>
+                    <textarea required rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Permanent Address</label>
+                    <textarea rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                  </div>
+                </div>
+              </section>
+
+              <div className="pt-8 border-t border-slate-100 flex items-center justify-end gap-3 shrink-0 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-6 py-3 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-10 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
+                >
+                  Add Student
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {[
+          { label: "Total Students", value: "3,248", trend: "+12%" },
+          { label: "Total Staff", value: "184", trend: "+2" },
+          { label: "Pending Fees", value: "$45.2K", textClass: "text-red-500", trend: "-5%" },
+          { label: "Attendance Today", value: "96.4%", textClass: "text-green-500", trend: "+0.4%" }
+        ].map((stat, i) => (
+          <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="flex justify-between items-start">
+              <span className="text-slate-500 text-xs font-bold uppercase tracking-wider">{stat.label}</span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${stat.trend.startsWith('+') ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                {stat.trend}
+              </span>
+            </div>
+            <span className={`text-3xl font-bold mt-4 ${stat.textClass || 'text-slate-800'}`}>
+              {stat.value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 lg:col-span-2 overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold text-slate-800">Latest Student Enrollments</h2>
+            <button className="text-sm text-[#3b71ca] font-bold hover:underline">View All</button>
+          </div>
+          <div className="overflow-x-auto -mx-6">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="text-[11px] text-slate-400 font-bold uppercase tracking-widest bg-slate-50/50 border-y border-slate-100">
+                  <th className="px-6 py-3">Student Name</th>
+                  <th className="px-6 py-3">Grade</th>
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm divide-y divide-slate-50">
+                {[
+                  { name: "Arjun Sharma", initial: "AS,indigo", grade: "10th Grade", date: "Today, 10:45 AM", status: "Enrolled,green" },
+                  { name: "Meera Patel", initial: "MP,pink", grade: "8th Grade", date: "Yesterday", status: "Docs Pending,yellow" },
+                  { name: "Rohan Joshi", initial: "RJ,teal", grade: "12th Grade", date: "Oct 12, 2026", status: "Enrolled,green" }
+                ].map((row, i) => {
+                  const [initial, color] = row.initial.split(',');
+                  const [statusText, statusColor] = row.status.split(',');
+                  return (
+                    <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="font-semibold text-slate-800 py-4 px-6 flex items-center">
+                        <div className={`w-8 h-8 rounded-full bg-${color}-100 text-${color}-700 flex items-center justify-center font-bold mr-3 text-xs shadow-sm border border-${color}-200`}>
+                          {initial}
+                        </div>
+                        {row.name}
+                      </td>
+                      <td className="text-slate-600 py-4 px-6 font-medium">{row.grade}</td>
+                      <td className="text-slate-500 py-4 px-6">{row.date}</td>
+                      <td className="text-right py-4 px-6">
+                        <span className={`px-2.5 py-1 bg-${statusColor}-100 text-${statusColor}-700 rounded-md text-[10px] font-bold uppercase tracking-wider`}>
+                          {statusText}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+          <h2 className="text-lg font-bold text-slate-800 mb-6 flex-none">Quick Actions</h2>
+          <div className="flex-1 space-y-4">
+            {[
+              { title: "Send Notice", desc: "Broadcast message to parents or staff", icon: "📢" },
+              { title: "Fee Reminders", desc: "Automate pending fee SMS alerts", icon: "💰" },
+              { title: "Generate ID Cards", desc: "Bulk print student ID templates", icon: "🆔" }
+            ].map((action, i) => (
+              <button key={i} className="w-full text-left px-5 py-4 rounded-xl border border-slate-100 bg-slate-50/30 hover:border-blue-300 hover:bg-blue-50/50 transition-all group flex gap-3 items-start">
+                <span className="text-2xl opacity-80 group-hover:scale-110 transition-transform">{action.icon}</span>
+                <div>
+                  <span className="block font-bold text-slate-800 group-hover:text-blue-700 text-sm">{action.title}</span>
+                  <span className="text-[11px] text-slate-500 mt-0.5 block font-medium leading-relaxed">{action.desc}</span>
+                </div>
+              </button>
             ))}
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 lg:col-span-2">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">Latest Student Enrollments</h2>
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-sm text-slate-500 font-medium border-b border-slate-100">
-                    <th className="pb-3">Student Name</th>
-                    <th className="pb-3">Grade</th>
-                    <th className="pb-3">Date</th>
-                    <th className="pb-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm divide-y divide-slate-50">
-                  <tr className="hover:bg-slate-50 transition-colors">
-                    <td className="font-semibold text-slate-800 py-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold mr-3 text-xs">AS</div>
-                      Arjun Sharma
-                    </td>
-                    <td className="text-slate-600 py-4">10th Grade</td>
-                    <td className="text-slate-500 py-4">Today, 10:45 AM</td>
-                    <td className="text-right py-4"><span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">Enrolled</span></td>
-                  </tr>
-                  <tr className="hover:bg-slate-50 transition-colors">
-                    <td className="font-semibold text-slate-800 py-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold mr-3 text-xs">MP</div>
-                      Meera Patel
-                    </td>
-                    <td className="text-slate-600 py-4">8th Grade</td>
-                    <td className="text-slate-500 py-4">Yesterday</td>
-                    <td className="text-right py-4"><span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-semibold">Docs Pending</span></td>
-                  </tr>
-                  <tr className="hover:bg-slate-50 transition-colors">
-                    <td className="font-semibold text-slate-800 py-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold mr-3 text-xs">RJ</div>
-                      Rohan Joshi
-                    </td>
-                    <td className="text-slate-600 py-4">12th Grade</td>
-                    <td className="text-slate-500 py-4">Oct 12, 2026</td>
-                    <td className="text-right py-4"><span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">Enrolled</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 flex-none">Quick Actions</h2>
-              <div className="flex-1 space-y-3">
-                <button className="w-full text-left px-5 py-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all group">
-                  <span className="block font-semibold text-slate-800 group-hover:text-blue-700">Send Notice</span>
-                  <span className="text-xs text-slate-500 mt-1 block">Broadcast message to parents or staff</span>
-                </button>
-                <button className="w-full text-left px-5 py-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all group">
-                  <span className="block font-semibold text-slate-800 group-hover:text-blue-700">Fee Reminders</span>
-                  <span className="text-xs text-slate-500 mt-1 block">Automate pending fee SMS alerts</span>
-                </button>
-                <button className="w-full text-left px-5 py-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all group">
-                  <span className="block font-semibold text-slate-800 group-hover:text-blue-700">Generate ID Cards</span>
-                  <span className="text-xs text-slate-500 mt-1 block">Bulk print student ID templates</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <button className="w-full mt-6 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+            View Analytics Dash
+          </button>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
