@@ -37,6 +37,9 @@ export default function LoginPage() {
       const data = await response.json();
 
       toast.success("Login successful!");
+      
+      // Store user to display actual data in dashboard profiles
+      localStorage.setItem("userData", JSON.stringify(data.user || data));
 
       // Route based on role from actual backend response
       const role = data.role?.toLowerCase() || "admin";
