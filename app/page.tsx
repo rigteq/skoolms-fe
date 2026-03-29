@@ -37,7 +37,10 @@ export default function LoginPage() {
       const data = await response.json();
 
       toast.success("Login successful!");
-      
+
+      // ✅ Save token to show data in admin dashboard.
+      localStorage.setItem("token", data.token);
+
       // Store user to display actual data in dashboard profiles
       localStorage.setItem("userData", JSON.stringify(data.user || data));
 

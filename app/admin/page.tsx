@@ -1,10 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+
 
 export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  //This stores dashboard values. Initially everything is 0 (default values). After API call → real data will come and replace this.
+  const [dashboardData, setDashboardData] = useState({
+    totalStudents: 0,
+    totalStaff: 0,
+    pendingFees: 0,
+    attendanceToday: 0,
+  });
+  //This is for loading screen. When page loads → loading is true. After API complete → loading is false Used to show loading UI.
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+
+        //Get token from local storage
+        const token = localStorage.getItem("token");
+        console.log("TOKEN:", token);
+
+        if (!token) {
+          console.log("No token found");
+          return;
+        }
+        console.log("TOKEN:", token);
+        // Fetch dashboard data 
+        //Calling backend API
+        const res = await fetch("http://localhost:5000/api/v1/insights/summary", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const result = await res.json();
+        console.log("RESULT:", result);
+
+        if (result.success) {
+          setDashboardData(result.data);
+        }
+      } catch (error) {
+        console.log("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  // ✅ Loading UI
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <p className="text-lg font-semibold text-slate-600">Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -148,10 +208,10 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { label: "Total Students", value: "3,248", trend: "+12%" },
-          { label: "Total Staff", value: "184", trend: "+2" },
-          { label: "Pending Fees", value: "$45.2K", textClass: "text-red-500", trend: "-5%" },
-          { label: "Attendance Today", value: "96.4%", textClass: "text-green-500", trend: "+0.4%" }
+          { label: "Total Students", value: dashboardData.totalStudents, trend: "+12%" },
+          { label: "Total Staff", value: dashboardData.totalStaff, trend: "+2" },
+          { label: "Pending Fees", value: `₹${dashboardData.pendingFees}`, textClass: "text-red-500", trend: "-5%" },
+          { label: "Attendance Today", value: `${dashboardData.attendanceToday}%`, textClass: "text-green-500", trend: "+0.4%" }
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-all hover:-translate-y-1">
             <div className="flex justify-between items-start">
