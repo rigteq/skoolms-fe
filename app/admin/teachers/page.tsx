@@ -3,10 +3,69 @@
 import {
     Plus, Search, Edit, Trash2, Filter
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+
+type Teacher = {
+    id: string;
+    full_name: string;
+    email: string;
+    subject_specialization: string;
+    classes: string[];
+};
+
+// export default function TeachersPage() {
+//     const [isModalOpen, setIsModalOpen] = useState(false);
+//     const [teachers, setTeachers] = useState([]);
+//     const [loading, setLoading] = useState(true);
 
 export default function TeachersPage() {
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTeachers = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                const res = await fetch("http://localhost:5000/api/teachers", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                const data = await res.json();
+
+                console.log("API RESPONSE 👉", data);
+
+                // ✅ STRICT NORMALIZATION (VERY IMPORTANT)
+                let teachersArray = [];
+
+                if (Array.isArray(data)) {
+                    teachersArray = data;
+                } else if (Array.isArray(data?.data)) {
+                    teachersArray = data.data;
+                } else if (Array.isArray(data?.teachers)) {
+                    teachersArray = data.teachers;
+                } else {
+                    teachersArray = [];
+                }
+
+                console.log("NORMALIZED ARRAY 👉", teachersArray);
+
+                setTeachers(teachersArray);
+            } catch (err) {
+                console.error("Fetch error:", err);
+                setTeachers([]); // safe fallback
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTeachers();
+    }, []);
+
 
     return (
         <>
@@ -62,47 +121,71 @@ export default function TeachersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {[
-                                { id: 1, name: "Dr. Sarah Wilson", email: "sarah.wilson@school.edu", phone: "+1 234-567-8901", subject: "Mathematics", classes: ["10A", "12B"], initial: "SW", color: "blue" },
-                                { id: 2, name: "James Miller", email: "j.miller@school.edu", phone: "+1 234-567-8902", subject: "Physics", classes: ["11A", "12A"], initial: "JM", color: "purple" },
-                                { id: 3, name: "Emily Davis", email: "emily.d@school.edu", phone: "+1 234-567-8903", subject: "English Literature", classes: ["10B", "11B"], initial: "ED", color: "emerald" },
-                                { id: 4, name: "Robert Chen", email: "r.chen@school.edu", phone: "+1 234-567-8904", subject: "Computer Science", classes: ["12A", "12B"], initial: "RC", color: "amber" },
-                                { id: 5, name: "Maria Gonzalez", email: "m.gonzalez@school.edu", phone: "+1 234-567-8905", subject: "Chemistry", classes: ["11A", "11B"], initial: "MG", color: "rose" },
-                            ].map((teacher) => (
-                                <tr key={teacher.id} className="hover:bg-slate-50/50 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center">
-                                            <div className={`w-10 h-10 rounded-full bg-${teacher.color}-100 text-${teacher.color}-700 border border-${teacher.color}-200 flex items-center justify-center font-bold mr-4 shadow-sm text-xs`}>
-                                                {teacher.initial}
+                            {Array.isArray(teachers) &&
+                                teachers.map((teacher) => (
+                                    <tr key={teacher.id} className="hover:bg-slate-50/50 transition-colors group">
+
+                                        {/* Teacher Info */}
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+
+                                                {/* Avatar (fallback initials from name) */}
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-bold mr-4 shadow-sm text-xs">
+                                                    {teacher.full_name
+                                                        ?.split(" ")
+                                                        .map((n) => n[0])
+                                                        .join("")
+                                                        .toUpperCase()}
+                                                </div>
+
+                                                <div>
+                                                    <p className="font-bold text-slate-800 text-sm leading-tight">
+                                                        {teacher.full_name}
+                                                    </p>
+                                                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                                                        {teacher.email}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="font-bold text-slate-800 text-sm leading-tight">{teacher.name}</p>
-                                                <p className="text-[11px] text-slate-500 font-medium mt-0.5">{teacher.email}</p>
+                                        </td>
+
+                                        {/* Subject */}
+                                        <td className="px-6 py-4">
+                                            <span className="font-bold text-slate-700 text-xs px-2 py-1 bg-slate-100 rounded-md border border-slate-200">
+                                                {teacher.subject_specialization}
+                                            </span>
+                                        </td>
+
+                                        {/* Classes */}
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {(teacher.classes || []).map((cls) => (
+                                                    <span
+                                                        key={cls}
+                                                        className="px-2 py-0.5 bg-blue-50/50 border border-blue-100 rounded text-[10px] font-extrabold text-[#3b71ca] uppercase"
+                                                    >
+                                                        {cls}
+                                                    </span>
+                                                ))}
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="font-bold text-slate-700 text-xs px-2 py-1 bg-slate-100 rounded-md border border-slate-200">{teacher.subject}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {teacher.classes.map(cls => (
-                                                <span key={cls} className="px-2 py-0.5 bg-blue-50/50 border border-blue-100 rounded text-[10px] font-extrabold text-[#3b71ca] uppercase">{cls}</span>
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 text-slate-400 hover:text-[#3b71ca] hover:bg-blue-50 rounded-lg transition-all" title="Edit">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+
+                                        {/* Actions */}
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                                                <button className="p-2 text-slate-400 hover:text-[#3b71ca] hover:bg-blue-50 rounded-lg transition-all" title="Edit">
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+
+                                                <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
@@ -120,7 +203,7 @@ export default function TeachersPage() {
             {/* Add Teacher Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div 
+                    <div
                         className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity"
                         onClick={() => setIsModalOpen(false)}
                     ></div>
@@ -131,7 +214,7 @@ export default function TeachersPage() {
                                 <h2 className="text-xl font-bold text-slate-800">Add New Teacher</h2>
                                 <p className="text-slate-500 text-xs mt-0.5 font-medium tracking-tight">Register a new teaching staff member.</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setIsModalOpen(false)}
                                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 shadow-sm"
                             >
@@ -143,26 +226,26 @@ export default function TeachersPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
-                                    <input 
+                                    <input
                                         required
-                                        type="text" 
+                                        type="text"
                                         placeholder="e.g. John Doe"
                                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email Address <span className="text-red-500">*</span></label>
-                                    <input 
+                                    <input
                                         required
-                                        type="email" 
+                                        type="email"
                                         placeholder="e.g. john@school.edu"
                                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Phone Number</label>
-                                    <input 
-                                        type="tel" 
+                                    <input
+                                        type="tel"
                                         placeholder="e.g. +1 234-567-890"
                                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
                                     />
@@ -192,14 +275,14 @@ export default function TeachersPage() {
                             </div>
 
                             <div className="pt-6 border-t border-slate-100 flex items-center justify-end gap-3 mt-6">
-                                <button 
+                                <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
                                     className="px-6 py-3 text-slate-600 font-bold text-sm hover:bg-slate-50 rounded-xl transition-colors"
                                 >
                                     Cancel
                                 </button>
-                                <button 
+                                <button
                                     type="submit"
                                     className="px-8 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
                                 >

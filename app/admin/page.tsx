@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import Link from "next/link";
+
 
 
 export default function AdminDashboard() {
@@ -12,52 +14,84 @@ export default function AdminDashboard() {
     totalStaff: 0,
     pendingFees: 0,
     attendanceToday: 0,
+    latestStudents: [] as any[],
   });
+
   //This is for loading screen. When page loads → loading is true. After API complete → loading is false Used to show loading UI.
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-
-        //Get token from local storage
         const token = localStorage.getItem("token");
-        console.log("TOKEN:", token);
+        if (!token) return;
 
-        if (!token) {
-          console.log("No token found");
-          return;
-        }
-        console.log("TOKEN:", token);
-        // Fetch dashboard data 
-        //Calling backend API
+        // Fetch summary stats
         const res = await fetch("http://localhost:5000/api/v1/insights/summary", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success) {
+            setDashboardData(prev => ({ ...prev, ...result.data }));
+          }
         }
 
-        const result = await res.json();
-        console.log("RESULT:", result);
+        // Fetch latest students separately if not in summary
+        const studentRes = await fetch("http://localhost:5000/api/v1/students?limit=5&sort=created_at:desc", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        if (result.success) {
-          setDashboardData(result.data);
+        if (studentRes.ok) {
+          const studentResult = await studentRes.json();
+          if (studentResult.success) {
+            setDashboardData(prev => ({ ...prev, latestStudents: studentResult.data.students || studentResult.data }));
+          }
         }
       } catch (error) {
-        console.log("Error:", error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }
     };
 
+
     fetchDashboard();
   }, []);
 
+  // ✅ Helpers
+  const getInitials = (name: string) => {
+    if (!name) return "??";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    const now = new Date();
+
+    // Check if it's today
+    const isToday = date.toDateString() === now.toDateString();
+    if (isToday) {
+      return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    // Check if it's yesterday
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+    if (isYesterday) return "Yesterday";
+
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const avatarColors = ['indigo', 'pink', 'teal', 'blue', 'violet', 'emerald', 'amber', 'rose'];
+
   // ✅ Loading UI
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
@@ -227,12 +261,13 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 lg:col-span-2 overflow-hidden flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 overflow-hidden flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-slate-800">Latest Student Enrollments</h2>
-            <button className="text-sm text-[#3b71ca] font-bold hover:underline">View All</button>
+            <Link href="/admin/students" className="text-sm text-[#3b71ca] font-bold hover:underline">View All</Link>
           </div>
+
           <div className="overflow-x-auto -mx-6">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -240,53 +275,52 @@ export default function AdminDashboard() {
                   <th className="px-6 py-3">Student Name</th>
                   <th className="px-6 py-3">Grade</th>
                   <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3 text-right">Status</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-slate-50">
-                {[
-                  { name: "Arjun Sharma", initial: "AS,indigo", grade: "10th Grade", date: "Today, 10:45 AM", status: "Enrolled,green" },
-                  { name: "Meera Patel", initial: "MP,pink", grade: "8th Grade", date: "Yesterday", status: "Docs Pending,yellow" },
-                  { name: "Rohan Joshi", initial: "RJ,teal", grade: "12th Grade", date: "Oct 12, 2026", status: "Enrolled,green" }
-                ].map((row, i) => {
-                  const [initial, color] = row.initial.split(',');
-                  const [statusText, statusColor] = row.status.split(',');
+                {dashboardData.latestStudents?.length > 0 ? dashboardData.latestStudents.slice(0, 5).map((student, i) => {
+                  const initial = getInitials(student.full_name);
+                  const color = avatarColors[i % avatarColors.length];
                   return (
-                    <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
+                    <tr key={student.id || i} className="hover:bg-slate-50/50 transition-colors group">
                       <td className="font-semibold text-slate-800 py-4 px-6 flex items-center">
                         <div className={`w-8 h-8 rounded-full bg-${color}-100 text-${color}-700 flex items-center justify-center font-bold mr-3 text-xs shadow-sm border border-${color}-200`}>
                           {initial}
                         </div>
-                        {row.name}
+                        {student.full_name}
                       </td>
-                      <td className="text-slate-600 py-4 px-6 font-medium">{row.grade}</td>
-                      <td className="text-slate-500 py-4 px-6">{row.date}</td>
-                      <td className="text-right py-4 px-6">
-                        <span className={`px-2.5 py-1 bg-${statusColor}-100 text-${statusColor}-700 rounded-md text-[10px] font-bold uppercase tracking-wider`}>
-                          {statusText}
-                        </span>
+                      <td className="text-slate-600 py-4 px-6 font-medium">
+                        {student.class_name || "N/A"}
                       </td>
+                      <td className="text-slate-500 py-4 px-6">{formatDate(student.created_at)}</td>
                     </tr>
                   );
-                })}
+                }) : (
+                  <tr>
+                    <td colSpan={3} className="py-8 text-center text-slate-400 font-medium">
+                      No recent enrollments found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
+
             </table>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 flex flex-col">
           <h2 className="text-lg font-bold text-slate-800 mb-6 flex-none">Quick Actions</h2>
-          <div className="flex-1 space-y-4">
+          <div className="flex-1 space-y-5">
             {[
               { title: "Send Notice", desc: "Broadcast message to parents or staff", icon: "📢" },
               { title: "Fee Reminders", desc: "Automate pending fee SMS alerts", icon: "💰" },
               { title: "Generate ID Cards", desc: "Bulk print student ID templates", icon: "🆔" }
             ].map((action, i) => (
-              <button key={i} className="w-full text-left px-5 py-4 rounded-xl border border-slate-100 bg-slate-50/30 hover:border-blue-300 hover:bg-blue-50/50 transition-all group flex gap-3 items-start">
-                <span className="text-2xl opacity-80 group-hover:scale-110 transition-transform">{action.icon}</span>
+              <button key={i} className="w-full text-left px-6 py-5 rounded-2xl border border-slate-100 bg-slate-50/30 hover:border-blue-300 hover:bg-blue-50/50 transition-all group flex gap-4 items-center">
+                <span className="text-3xl opacity-90 group-hover:scale-110 transition-transform shrink-0">{action.icon}</span>
                 <div>
-                  <span className="block font-bold text-slate-800 group-hover:text-blue-700 text-sm">{action.title}</span>
-                  <span className="text-[11px] text-slate-500 mt-0.5 block font-medium leading-relaxed">{action.desc}</span>
+                  <span className="block font-bold text-slate-800 group-hover:text-blue-700 text-base">{action.title}</span>
+                  <span className="text-xs text-slate-500 mt-1 block font-medium leading-relaxed">{action.desc}</span>
                 </div>
               </button>
             ))}
