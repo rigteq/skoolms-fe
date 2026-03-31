@@ -66,6 +66,13 @@ export default function TeachersPage() {
         fetchTeachers();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-[60vh]">
+                <p className="text-lg font-semibold text-slate-600">Loading dashboard...</p>
+            </div>
+        );
+    }
 
     return (
         <>

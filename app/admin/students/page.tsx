@@ -5,10 +5,85 @@ import {
     Search,
     Plus, Edit, Trash2, Filter
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
+
+
+type StudentType = {
+    id: string;
+    full_name: string;
+    email: string;
+    parent_name: string;
+    parent_phone: string | null;
+    class_name: string;
+};
 export default function StudentsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // ✅ States
+    const [students, setStudents] = useState<StudentType[]>([]);
+    const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedClass, setSelectedClass] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        fetch("http://localhost:5000/api/v1/students", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log("API -> ", data);
+
+                setStudents(data?.data || []);
+                setFilteredStudents(data?.data || []);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
+    }, []);
+
+    // ✅ Filtering Logic
+    useEffect(() => {
+        const filtered = students.filter((student) => {
+            const matchesSearch =
+                student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (student.parent_phone || "").includes(searchTerm);
+
+            const matchesClass =
+                selectedClass === "" ||
+                student.class_name.includes(selectedClass);
+
+            return matchesSearch && matchesClass;
+        });
+
+        setFilteredStudents(filtered);
+        setCurrentPage(1);
+    }, [searchTerm, selectedClass, students]);
+
+    // ✅ Pagination Logic
+    const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
+
+    // ✅ Loading 
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-[60vh]">
+                <p className="text-lg font-semibold text-slate-600">Loading dashboard...</p>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -34,11 +109,17 @@ export default function StudentsPage() {
                         <input
                             type="text"
                             placeholder="Search by name, ID, or phone..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
                         />
                     </div>
                     <div className="flex gap-2">
-                        <select className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl bg-white text-sm font-bold outline-none focus:border-[#3b71ca] cursor-pointer">
+                        <select
+                            value={selectedClass}
+                            onChange={(e) => setSelectedClass(e.target.value)}
+                            className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl bg-white text-sm font-bold outline-none focus:border-[#3b71ca] cursor-pointer"
+                        >
                             <option value="">All Classes</option>
                             <option value="10">Class 10</option>
                             <option value="11">Class 11</option>
@@ -65,28 +146,22 @@ export default function StudentsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {[
-                                { id: 1, name: "Alexander Pierce", email: "alex.p@school.edu", phone: "+1 234-512-3210", class: "10A", parent: "Robert Pierce", parentPhone: "+1 234-999-0001", gender: "Male" },
-                                { id: 2, name: "Sophia Martinez", email: "sophia.m@school.edu", phone: "+1 234-512-3211", class: "11B", parent: "Elena Martinez", parentPhone: "+1 234-999-0002", gender: "Female" },
-                                { id: 3, name: "Liam Johnson", email: "liam.j@school.edu", phone: "+1 234-512-3212", class: "12A", parent: "David Johnson", parentPhone: "+1 234-999-0003", gender: "Male" },
-                                { id: 4, name: "Isabella Wang", email: "i.wang@school.edu", phone: "+1 234-512-3213", class: "10B", parent: "Kevin Wang", parentPhone: "+1 234-999-0004", gender: "Female" },
-                                { id: 5, name: "Noah Williams", email: "noah.w@school.edu", phone: "+1 234-512-3214", class: "12B", parent: "Susan Williams", parentPhone: "+1 234-999-0005", gender: "Male" },
-                            ].map((student) => (
+                            {paginatedStudents.map((student) => (
                                 <tr key={student.id} className="hover:bg-slate-50/50 transition-colors group">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center">
-                                            <div className={`w-10 h-10 rounded-full ${student.gender === 'Male' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-rose-100 text-rose-700 border-rose-200'} flex items-center justify-center font-bold mr-4 shadow-sm border text-xs`}>
-                                                {student.name.split(' ').map(n => n[0]).join('')}
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 border-blue-200 flex items-center justify-center font-bold mr-4 shadow-sm border text-xs">
+                                                {student.full_name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-800 text-sm leading-tight">{student.name}</p>
+                                                <p className="font-bold text-slate-800 text-sm leading-tight">{student.full_name}</p>
                                                 <p className="text-[11px] text-slate-500 font-medium mt-0.5">{student.email}</p>
-                                                <p className="text-[10px] text-slate-400 font-bold mt-0.5 tracking-tight uppercase">{student.phone}</p>
+                                                <p className="text-[10px] text-slate-400 font-bold mt-0.5 tracking-tight uppercase">{student.parent_phone}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="px-2.5 py-1 bg-[#3b71ca]/10 text-[#3b71ca] rounded-md text-[10px] font-extrabold border border-[#3b71ca]/20 tracking-widest uppercase">{student.class}</span>
+                                        <span className="px-2.5 py-1 bg-[#3b71ca]/10 text-[#3b71ca] rounded-md text-[10px] font-extrabold border border-[#3b71ca]/20 tracking-widest uppercase">{student.class_name}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -94,8 +169,8 @@ export default function StudentsPage() {
                                                 <Users className="w-4 h-4" />
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-700 text-xs leading-tight">{student.parent}</p>
-                                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">{student.parentPhone}</p>
+                                                <p className="font-bold text-slate-700 text-xs leading-tight">{student.parent_name}</p>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">{student.parent_phone}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -115,12 +190,38 @@ export default function StudentsPage() {
                     </table>
                 </div>
                 <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/20 flex items-center justify-between text-[11px] text-slate-500 font-bold uppercase tracking-tighter">
-                    <span>Showing 5 of 120 students</span>
+                    <span>
+                        Showing {paginatedStudents.length > 0 ? startIndex + 1 : 0} to{" "}
+                        {Math.min(startIndex + itemsPerPage, filteredStudents.length)} of{" "}
+                        {filteredStudents.length} students
+                    </span>
                     <div className="flex gap-2">
-                        <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-50" disabled>Prev</button>
-                        <button className="px-3 py-1.5 bg-[#3b71ca] text-white rounded-lg shadow-sm">1</button>
-                        <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors">2</button>
-                        <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors">Next</button>
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i + 1}
+                                onClick={() => setCurrentPage(i + 1)}
+                                className={`px-3 py-1.5 rounded-lg shadow-sm transition-colors ${currentPage === i + 1
+                                    ? "bg-[#3b71ca] text-white"
+                                    : "border border-slate-200 hover:bg-white"
+                                    }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages || totalPages === 0}
+                            className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-50"
+                        >
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>
