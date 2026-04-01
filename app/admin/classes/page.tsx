@@ -52,7 +52,8 @@ export default function ClassesPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
-                <p className="text-lg font-semibold text-slate-600">Loading dashboard...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3b71ca]"></div>
+                <p className="ml-3 text-lg font-semibold text-slate-600">Loading data...</p>
             </div>
         );
     }

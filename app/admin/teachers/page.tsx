@@ -25,13 +25,13 @@ export default function TeachersPage() {
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState<ClassType[]>([]);
     const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-    
+
     // Search, Filter & Pagination States
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [filterSubject, setFilterSubject] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
-    
+
     const itemsPerPage = 5;
 
     const [formData, setFormData] = useState({
@@ -68,12 +68,12 @@ export default function TeachersPage() {
                 },
             });
             const data = await res.json();
-            
+
             let teachersArray = [];
             if (Array.isArray(data)) teachersArray = data;
             else if (Array.isArray(data?.data)) teachersArray = data.data;
             else if (Array.isArray(data?.teachers)) teachersArray = data.teachers;
-            
+
             setTeachers(teachersArray);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -91,12 +91,12 @@ export default function TeachersPage() {
     const filteredTeachers = useMemo(() => {
         return teachers.filter((teacher) => {
             const query = searchQuery.toLowerCase();
-            const matchesSearch = 
+            const matchesSearch =
                 teacher.full_name?.toLowerCase().includes(query) ||
                 teacher.email?.toLowerCase().includes(query) ||
                 teacher.subject_specialization?.toLowerCase().includes(query);
-            
-            const matchesFilter = filterSubject 
+
+            const matchesFilter = filterSubject
                 ? teacher.subject_specialization?.toLowerCase() === filterSubject.toLowerCase()
                 : true;
 
@@ -151,7 +151,7 @@ export default function TeachersPage() {
                 // Success Popup Logic
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
-                
+
                 setIsModalOpen(false);
                 setFormData({
                     full_name: "",
@@ -227,7 +227,7 @@ export default function TeachersPage() {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <select 
+                        <select
                             value={filterSubject}
                             onChange={(e) => setFilterSubject(e.target.value)}
                             className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl bg-white text-sm font-bold outline-none focus:border-[#3b71ca] cursor-pointer"
@@ -239,7 +239,7 @@ export default function TeachersPage() {
                             <option value="english">English</option>
                             <option value="science">Science</option>
                         </select>
-                        
+
                         <div className="px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-[10px] font-extrabold text-slate-400 flex items-center gap-2 uppercase tracking-widest leading-none">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#3b71ca] animate-pulse"></span>
                             {filteredTeachers.length} Records
@@ -334,29 +334,28 @@ export default function TeachersPage() {
                         Showing {paginatedTeachers.length} of {filteredTeachers.length} Teachers
                     </span>
                     <div className="flex gap-2">
-                        <button 
+                        <button
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-50"
                         >
                             Prev
                         </button>
-                        
+
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                             <button
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-1.5 rounded-lg shadow-sm transition-all ${
-                                    currentPage === page 
-                                    ? "bg-[#3b71ca] text-white" 
-                                    : "border border-slate-200 hover:bg-white"
-                                }`}
+                                className={`px-3 py-1.5 rounded-lg shadow-sm transition-all ${currentPage === page
+                                        ? "bg-[#3b71ca] text-white"
+                                        : "border border-slate-200 hover:bg-white"
+                                    }`}
                             >
                                 {page}
                             </button>
                         ))}
 
-                        <button 
+                        <button
                             disabled={currentPage === totalPages || totalPages === 0}
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-50"
@@ -418,7 +417,7 @@ export default function TeachersPage() {
                                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
                                     />
                                 </div>
-                                
+
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email Address <span className="text-red-500">*</span></label>
                                     <input
