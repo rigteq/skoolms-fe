@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       toast.success("Login successful!");
 
-      // ✅ Save token to show data in admin dashboard.
+      // Set token for the frontend dashboard
       localStorage.setItem("token", data.token);
 
       // Store user to display actual data in dashboard profiles

@@ -122,7 +122,7 @@ export default function StudentsPage() {
                     className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-2xl hover:shadow-xl transition-all shadow-lg font-bold text-sm group"
                 >
                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-                    Enroll New Student
+                    Add Student
                 </button>
             </div>
 
@@ -151,41 +151,32 @@ export default function StudentsPage() {
 
 
                 {/* Responsive Table UI */}
-                <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1400px]">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                         <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-extrabold uppercase tracking-widest text-[10px]">
                             <tr>
-                                <th className="px-8 py-5">Profile & ID</th>
-                                <th className="px-6 py-5">Personal Contact</th>
-                                <th className="px-6 py-5">Parental Info</th>
-                                <th className="px-6 py-5">Academic Track</th>
-                                <th className="px-6 py-5">Status</th>
-                                <th className="px-6 py-5">Registered</th>
-                                <th className="px-8 py-5 text-right">Actions</th>
+                                <th className="px-6 py-4">Profile & ID</th>
+                                <th className="px-6 py-4">Personal Contact</th>
+                                <th className="px-6 py-4">Parental Info</th>
+                                <th className="px-6 py-4">Academic Track</th>
+                                <th className="px-6 py-4 text-center">Status</th>
+                                <th className="px-6 py-4">Registered</th>
+                                <th className="px-6 py-4 text-center w-[120px]">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50">
+                        <tbody className="divide-y divide-slate-50 border-b border-slate-50">
                             {filteredStudents.length > 0 ? (
                                 filteredStudents.map((student) => (
                                     <tr key={student.id} className="hover:bg-slate-50/40 transition-all group/row">
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 p-[2px] flex-shrink-0">
-                                                    <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center font-bold text-[#4CAF50] text-lg shadow-inner">
-                                                        {student.full_name.charAt(0)}
-                                                    </div>
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-extrabold text-slate-800 text-[14px] leading-tight group-hover/row:text-[#4CAF50] transition-colors">{student.full_name}</span>
-                                                    <span className="font-mono text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">UID: {student.id.substring(0, 8)}</span>
-                                                    <div className="flex items-center gap-1.5 mt-2">
-                                                        <Calendar className="w-3 h-3 text-slate-300" />
-                                                        <span className="text-[10px] font-bold text-slate-500">{formatDate(student.dob)}</span>
-                                                    </div>
-                                                </div>
+                                        <td className="px-6 py-4">
+                                            {student.full_name}
+                                            <span className="block text-[10px] text-slate-400 mt-1 uppercase font-mono tracking-tighter">UID: {student.id.substring(0, 8)}...</span>
+                                            <div className="flex items-center gap-1 mt-2 text-xs font-bold text-slate-500">
+                                                <Calendar className="w-3 h-3 text-slate-300" />
+                                                <span className="text-[10px] font-bold text-slate-500">{formatDate(student.dob)}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-center text-slate-600 font-bold text-[12px] group/item">
                                                     <Mail className="w-3.5 h-3.5 mr-2 text-slate-300 group-hover/item:text-[#4CAF50] transition-colors" /> {student.email}
@@ -199,7 +190,7 @@ export default function StudentsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100/50 group-hover/row:bg-white transition-colors">
                                                 <div className="flex items-center font-bold text-slate-700 text-[12px] mb-1.5">
                                                     <User className="w-3 h-3 mr-2 text-[#4CAF50]" /> {student.parent_name}
@@ -209,7 +200,7 @@ export default function StudentsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="flex flex-col gap-2">
                                                 <div className="inline-flex items-center px-2 py-1 bg-[#4CAF50]/5 text-[#4CAF50] rounded-lg text-[10px] font-black uppercase tracking-widest border border-[#4CAF50]/10 self-start">
                                                     {student.class_name}
@@ -219,30 +210,30 @@ export default function StudentsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6 text-center">
-                                            <div className={`inline-flex items-center px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm ${!student.is_deleted
-                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                                : "bg-rose-50 text-rose-700 border border-rose-100"
+                                        <td className="px-6 py-4 text-center">
+                                            <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!student.is_deleted
+                                                ? "bg-emerald-50 text-emerald-700"
+                                                : "bg-rose-50 text-rose-700"
                                                 }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!student.is_deleted ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></span>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!student.is_deleted ? "bg-emerald-500" : "bg-rose-500"}`}></span>
                                                 {!student.is_deleted ? "Active" : "Archived"}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="flex flex-col text-[11px] gap-1 font-bold">
                                                 <span className="text-slate-400">Join: <b className="text-slate-600 font-extrabold">{formatDate(student.created_at)}</b></span>
                                                 <span className="text-slate-300 text-[10px] mt-0.5">Updated: {formatDate(student.updated_at)}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-1 opacity-10 group-hover/row:opacity-100 transition-opacity">
-                                                <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
+                                        <td className="px-6 py-4 w-[120px]">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
                                                     <Eye className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit school">
+                                                <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit school">
                                                     <Edit className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete school">
+                                                <button className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete school">
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -284,232 +275,236 @@ export default function StudentsPage() {
                         <button className="px-5 py-2 text-[11px] font-black uppercase tracking-tighter border border-slate-200 rounded-xl hover:bg-white transition-all text-slate-600 shadow-sm">Next Page</button>
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Enrollment Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-                    {/* Overlay */}
-                    <div
-                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300"
-                        onClick={() => setIsModalOpen(false)}
-                    />
+            {
+                isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+                        {/* Overlay */}
+                        <div
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300"
+                            onClick={() => setIsModalOpen(false)}
+                        />
 
-                    {/* Modal Body */}
-                    <div className="relative bg-white w-full max-w-3xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
-                        {/* Modal Header */}
-                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
-                                    <GraduationCap className="w-6 h-6" />
+                        {/* Modal Body */}
+                        <div className="relative bg-white w-full max-w-3xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+                            {/* Modal Header */}
+                            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
+                                        <GraduationCap className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-slate-800 text-xl tracking-tight">New Student</h3>
+                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Academic Year 2026-27</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-black text-slate-800 text-xl tracking-tight">Student Enrollment</h3>
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-0.5">Academic Year 2026-27</p>
-                                </div>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm group"
+                                >
+                                    <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm group"
-                            >
-                                <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
-                            </button>
-                        </div>
 
-                        {/* Modal Form */}
-                        <form onSubmit={handleCreateStudent} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {/* Left Column: Academic & Personal */}
-                                <div className="space-y-6">
-                                    <div className="space-y-3">
-                                        <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
-                                            <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Academic Link
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4">
+                            {/* Modal Form */}
+                            <form onSubmit={handleCreateStudent} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Left Column: Academic & Personal */}
+                                    <div className="space-y-6">
+                                        <div className="space-y-3">
+                                            <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
+                                                <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Academic Link
+                                            </h4>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">School</label>
+                                                    <div className="relative">
+                                                        <select
+                                                            value={form.school_id}
+                                                            onChange={(e) => setForm({ ...form, school_id: e.target.value })}
+                                                            className="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                                        >
+                                                            <option value="">Select School</option>
+                                                            {dummySchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                                        </select>
+                                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Class</label>
+                                                    <div className="relative">
+                                                        <select
+                                                            value={form.class_id}
+                                                            onChange={(e) => setForm({ ...form, class_id: e.target.value })}
+                                                            className="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                                        >
+                                                            <option value="">Select Class</option>
+                                                            {dummyClasses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                                        </select>
+                                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
+                                                <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Student Identity
+                                            </h4>
                                             <div className="space-y-1.5">
-                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">School</label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={form.school_id}
-                                                        onChange={(e) => setForm({ ...form, school_id: e.target.value })}
-                                                        className="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
-                                                    >
-                                                        <option value="">Select School</option>
-                                                        {dummySchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                                    </select>
-                                                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Full Name <span className="text-rose-500">*</span></label>
+                                                <input
+                                                    type="text"
+                                                    autoFocus
+                                                    placeholder="Enter full legal name"
+                                                    value={form.full_name}
+                                                    onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                                                    className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.full_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                        }`}
+                                                />
+                                                {errors.full_name && <p className="text-[9px] text-rose-500 font-black uppercase tracking-wider ml-1">{errors.full_name}</p>}
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1.5 font-bold">
+                                                    <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Date of Birth</label>
+                                                    <input
+                                                        type="date"
+                                                        value={form.dob}
+                                                        onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Personal Phone</label>
+                                                    <input
+                                                        type="tel"
+                                                        placeholder="+91"
+                                                        value={form.phone}
+                                                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                                    />
                                                 </div>
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Class</label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={form.class_id}
-                                                        onChange={(e) => setForm({ ...form, class_id: e.target.value })}
-                                                        className="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
-                                                    >
-                                                        <option value="">Select Class</option>
-                                                        {dummyClasses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                                    </select>
-                                                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                </div>
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Email Address</label>
+                                                <input
+                                                    type="email"
+                                                    placeholder="student@example.com"
+                                                    value={form.email}
+                                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                                    className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                        }`}
+                                                />
+                                                {errors.email && <p className="text-[9px] text-rose-500 font-black uppercase tracking-wider ml-1">{errors.email}</p>}
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
-                                            <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Student Identity
-                                        </h4>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Full Name <span className="text-rose-500">*</span></label>
-                                            <input
-                                                type="text"
-                                                autoFocus
-                                                placeholder="Enter full legal name"
-                                                value={form.full_name}
-                                                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                                                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.full_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                                    }`}
-                                            />
-                                            {errors.full_name && <p className="text-[9px] text-rose-500 font-black uppercase tracking-wider ml-1">{errors.full_name}</p>}
+                                    {/* Right Column: Address & Parental */}
+                                    <div className="space-y-6">
+                                        <div className="space-y-3">
+                                            <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
+                                                <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Residency
+                                            </h4>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Current Address</label>
+                                                <textarea
+                                                    rows={2}
+                                                    placeholder="Local residency details"
+                                                    value={form.current_address}
+                                                    onChange={(e) => setForm({ ...form, current_address: e.target.value })}
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Permanent Address</label>
+                                                <textarea
+                                                    rows={2}
+                                                    placeholder="Permanent residency details"
+                                                    value={form.permanent_address}
+                                                    onChange={(e) => setForm({ ...form, permanent_address: e.target.value })}
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1.5 font-bold">
-                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Date of Birth</label>
+
+                                        <div className="space-y-3">
+                                            <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
+                                                <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Guardian Information
+                                            </h4>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Parent/Guardian Name</label>
                                                 <input
-                                                    type="date"
-                                                    value={form.dob}
-                                                    onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                                                    type="text"
+                                                    placeholder="Guardian name"
+                                                    value={form.parent_name}
+                                                    onChange={(e) => setForm({ ...form, parent_name: e.target.value })}
                                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Personal Phone</label>
+                                                <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Guardian Contact</label>
                                                 <input
                                                     type="tel"
                                                     placeholder="+91"
-                                                    value={form.phone}
-                                                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                                    value={form.parent_phone}
+                                                    onChange={(e) => setForm({ ...form, parent_phone: e.target.value })}
                                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
                                                 />
                                             </div>
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Email Address</label>
-                                            <input
-                                                type="email"
-                                                placeholder="student@example.com"
-                                                value={form.email}
-                                                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                                    }`}
-                                            />
-                                            {errors.email && <p className="text-[9px] text-rose-500 font-black uppercase tracking-wider ml-1">{errors.email}</p>}
-                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Right Column: Address & Parental */}
-                                <div className="space-y-6">
-                                    <div className="space-y-3">
-                                        <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
-                                            <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Residency
-                                        </h4>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Current Address</label>
-                                            <textarea
-                                                rows={2}
-                                                placeholder="Local residency details"
-                                                value={form.current_address}
-                                                onChange={(e) => setForm({ ...form, current_address: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
-                                            />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Permanent Address</label>
-                                            <textarea
-                                                rows={2}
-                                                placeholder="Permanent residency details"
-                                                value={form.permanent_address}
-                                                onChange={(e) => setForm({ ...form, permanent_address: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <h4 className="text-[10px] font-black text-[#4CAF50] uppercase tracking-widest flex items-center gap-2">
-                                            <div className="w-6 h-[1px] bg-[#4CAF50]"></div> Guardian Information
-                                        </h4>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Parent/Guardian Name</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Guardian name"
-                                                value={form.parent_name}
-                                                onChange={(e) => setForm({ ...form, parent_name: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
-                                            />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-[11px] font-black text-slate-700 ml-1 uppercase">Guardian Contact</label>
-                                            <input
-                                                type="tel"
-                                                placeholder="+91"
-                                                value={form.parent_phone}
-                                                onChange={(e) => setForm({ ...form, parent_phone: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
-                                            />
-                                        </div>
-                                    </div>
+                                {/* Form Action Buttons */}
+                                <div className="mt-10 flex gap-4 flex-shrink-0">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all shadow-sm"
+                                    >
+                                        Cancel Operations
+                                    </button>
+                                    <button
+                                        disabled={isSubmitting}
+                                        type="submit"
+                                        className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl shadow-[#4CAF50]/30 hover:shadow-[#4CAF50]/40 transition-all disabled:opacity-50 flex items-center justify-center min-h-[56px]"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                                                Processing enrollment...
+                                            </>
+                                        ) : (
+                                            "Create Student"
+                                        )}
+                                    </button>
                                 </div>
-                            </div>
-
-                            {/* Form Action Buttons */}
-                            <div className="mt-10 flex gap-4 flex-shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all shadow-sm"
-                                >
-                                    Cancel Protocol
-                                </button>
-                                <button
-                                    disabled={isSubmitting}
-                                    type="submit"
-                                    className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl shadow-[#4CAF50]/30 hover:shadow-[#4CAF50]/40 transition-all disabled:opacity-50 flex items-center justify-center min-h-[56px]"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-                                            Processing enrollment...
-                                        </>
-                                    ) : (
-                                        "Confirm Enrollment"
-                                    )}
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Success Toast Notification */}
-            {showToast && (
-                <div className="fixed bottom-10 right-10 z-[60] bg-slate-900 border border-slate-800 text-white px-8 py-5 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-5 animate-in slide-in-from-right duration-500">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                        <CheckCircle className="w-6 h-6" />
+            {
+                showToast && (
+                    <div className="fixed bottom-10 right-10 z-[60] bg-slate-900 border border-slate-800 text-white px-8 py-5 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-5 animate-in slide-in-from-right duration-500">
+                        <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div className="pr-6 border-r border-slate-800">
+                            <p className="font-black text-sm tracking-tight leading-none text-white uppercase">Registry Success</p>
+                            <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-widest">Student profile has been initialized</p>
+                        </div>
+                        <button onClick={() => setShowToast(false)} className="text-slate-500 hover:text-white transition-colors">
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
-                    <div className="pr-6 border-r border-slate-800">
-                        <p className="font-black text-sm tracking-tight leading-none text-white uppercase">Registry Success</p>
-                        <p className="text-slate-400 text-[10px] font-bold mt-1 uppercase tracking-widest">Student profile has been initialized</p>
-                    </div>
-                    <button onClick={() => setShowToast(false)} className="text-slate-500 hover:text-white transition-colors">
-                        <X className="w-5 h-5" />
-                    </button>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

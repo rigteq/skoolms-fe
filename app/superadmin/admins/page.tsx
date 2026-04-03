@@ -30,37 +30,46 @@ export default function AdminsPage() {
         { id: "sch-03", name: "Modern Public School" }
     ];
 
-    // Dummy Admins
-    const [admins, setAdmins] = useState([
-        {
-            id: "a1",
-            full_name: "Amit Sharma",
-            email: "amit@school.com",
-            dob: "1990-05-10",
-            phone: "+91 9876543210",
-            current_address: "Delhi, India",
-            role_name: "SUPER_ADMIN",
-            school_name: "Green Valley School",
-            is_active: true,
-            created_at: "2026-01-10",
-            updated_at: "2026-03-05",
-            last_login: "2026-03-20"
-        },
-        {
-            id: "a2",
-            full_name: "Neha Verma",
-            email: "neha@school.com",
-            dob: "1995-08-22",
-            phone: "+91 9123456789",
-            current_address: "Mumbai, India",
-            role_name: "ADMIN",
-            school_name: "St. Xavier's Academy",
-            is_active: false,
-            created_at: "2026-02-15",
-            updated_at: "2026-03-10",
-            last_login: null
-        }
-    ]);
+    // Superadmins
+    const [admins, setAdmins] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAdmins = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                console.log("TOKEN:", token);
+
+                const res = await fetch("http://localhost:5000/api/admins", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                });
+
+                console.log("STATUS:", res.status);
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    console.error("BACKEND ERROR:", text);
+                    throw new Error("Failed to fetch admins");
+                }
+
+                const data = await res.json();
+
+                setAdmins(data);
+
+            } catch (error) {
+                console.error("Error fetching admins:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAdmins();
+    }, []);
 
     // Handle ESC to close modal
     useEffect(() => {
@@ -96,7 +105,7 @@ export default function AdminsPage() {
             newErrors.email = "Invalid email format";
         }
         if (!form.role) newErrors.role = "Role selection is required";
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -121,7 +130,7 @@ export default function AdminsPage() {
         setIsSubmitting(false);
         setIsModalOpen(false);
         setShowToast(true);
-        
+
         // Reset form
         setForm({
             full_name: "",
@@ -146,7 +155,7 @@ export default function AdminsPage() {
 
     return (
         <div className="p-8 bg-slate-50/50 min-h-screen">
-            
+
             {/* --- DASHBOARD HEADER --- */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
@@ -158,13 +167,13 @@ export default function AdminsPage() {
                     className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-2xl hover:shadow-xl transition-all shadow-lg font-bold text-sm group"
                 >
                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-                    Add New Admin
+                    Add Admin
                 </button>
             </div>
 
             {/* --- TABLE CONTAINER --- */}
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-200/60 overflow-hidden flex flex-col">
-                
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
+
                 {/* Search & Filter */}
                 <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row justify-between gap-4">
                     <div className="relative w-full md:w-96">
@@ -173,7 +182,7 @@ export default function AdminsPage() {
                             type="text"
                             value={pageSearch}
                             onChange={(e) => setPageSearch(e.target.value)}
-                            placeholder="Search by name, email, or phone..."
+                            placeholder="Filter admins by name, email, or phone..."
                             className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-[#4CAF50]/20 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium"
                         />
                     </div>
@@ -190,35 +199,46 @@ export default function AdminsPage() {
                     <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                         <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-extrabold uppercase tracking-widest text-[10px]">
                             <tr>
-                                <th className="px-8 py-5">Profile & ID</th>
-                                <th className="px-6 py-5">Contact</th>
-                                <th className="px-6 py-5">Role & School</th>
-                                <th className="px-6 py-5 text-center">Status</th>
-                                <th className="px-6 py-5">Activity</th>
-                                <th className="px-8 py-5 text-right">Actions</th>
+                                <th className="px-6 py-4">Profile & ID</th>
+                                <th className="px-6 py-4">Contact</th>
+                                <th className="px-6 py-4">Role & School</th>
+                                <th className="px-6 py-4 text-center">Status</th>
+                                <th className="px-6 py-4">Activity</th>
+                                <th className="px-6 py-4 text-center w-[120px]">Actions</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-slate-50 border-b border-slate-50">
-                            {filteredAdmins.length > 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="px-8 py-32 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-4">
+
+                                            <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
+
+                                            <h3 className="text-lg font-bold text-slate-500">
+                                                Loading Admins...
+                                            </h3>
+
+                                            {/* Subtitle */}
+                                            <p className="text-sm text-slate-400 italic">
+                                                Fetching admin records from server
+                                            </p>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : filteredAdmins.length > 0 ? (
                                 filteredAdmins.map((admin) => (
                                     <tr key={admin.id} className="hover:bg-slate-50/40 transition-all group/row">
                                         <td className="px-8 py-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 p-[2px]">
-                                                    <div className="w-full h-full rounded-[14px] bg-white flex items-center justify-center font-bold text-indigo-600">
-                                                        {admin.full_name.charAt(0)}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <span className="font-extrabold text-slate-800 text-[14px]">{admin.full_name}</span>
-                                                    <span className="block text-[10px] text-slate-400 mt-1 uppercase font-mono tracking-tighter">UID: {admin.id.substring(0, 8)}...</span>
-                                                    <div className="flex items-center gap-1 mt-2 text-xs font-bold text-slate-500">
-                                                        <Calendar className="w-3 h-3 text-slate-300" /> {formatDate(admin.dob)}
-                                                    </div>
-                                                </div>
+                                            {admin.full_name}
+                                            <span className="block text-[10px] text-slate-400 mt-1 uppercase font-mono tracking-tighter">UID: {admin.id.substring(0, 8)}...</span>
+                                            <div className="flex items-center gap-1 mt-2 text-xs font-bold text-slate-500">
+                                                <Calendar className="w-3 h-3 text-slate-300" /> {formatDate(admin.dob)}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-center text-slate-600 font-bold text-[12px]">
                                                     <Mail className="w-3.5 h-3.5 mr-2 text-slate-300" /> {admin.email}
@@ -231,7 +251,7 @@ export default function AdminsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6 font-bold">
+                                        <td className="px-6 py-4 font-bold">
                                             <div className="flex flex-col gap-2">
                                                 <div className="inline-flex items-center px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100 self-start">
                                                     <ShieldCheck className="w-3 h-3 mr-1.5" /> {admin.role_name}
@@ -241,23 +261,23 @@ export default function AdminsPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6 text-center">
-                                            <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${admin.is_active ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${admin.is_active ? "bg-emerald-500" : "bg-rose-500"}`}></span>
-                                                {admin.is_active ? "Online" : "Terminated"}
+                                        <td className="px-6 py-4 text-center">
+                                            <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!admin.is_active ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!admin.is_active ? "bg-emerald-500" : "bg-rose-500"}`}></span>
+                                                {!admin.is_active ? "Active" : "Terminated"}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
+                                        <td className="px-6 py-4">
                                             <div className="flex flex-col text-[11px] font-bold">
                                                 <span className="text-slate-400">Join: <b className="text-slate-600">{formatDate(admin.created_at)}</b></span>
                                                 <span className="text-slate-300 text-[10px] mt-0.5 whitespace-nowrap">Last Active: {admin.last_login ? formatDate(admin.last_login) : "Offline"}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-1 opacity-10 group-hover/row:opacity-100 transition-opacity">
-                                                <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Eye className="w-4 h-4" /></button>
-                                                <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><Edit className="w-4 h-4" /></button>
-                                                <button className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
+                                        <td className="px-8 py-4 w-[120px]">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Eye className="w-4 h-4" /></button>
+                                                <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><Edit className="w-4 h-4" /></button>
+                                                <button className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -274,29 +294,53 @@ export default function AdminsPage() {
                         </tbody>
                     </table>
                 </div>
+                {/* Pagination Bar */}
+                <div className="p-4 border-t border-slate-100 bg-slate-50/10 flex items-center justify-between text-xs text-slate-500 font-bold px-8">
+
+                    <span>
+                        Showing {filteredAdmins.length} of {admins.length} entries
+                    </span>
+
+                    <div className="flex gap-2">
+                        <button
+                            className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-40"
+                            disabled
+                        >
+                            Previous
+                        </button>
+
+                        <button className="px-3 py-1.5 bg-[#4CAF50] text-white rounded-lg shadow-sm">
+                            1
+                        </button>
+
+                        <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+                            Next
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* --- CREATE ADMIN MODAL --- */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
                     {/* Dark Overlay with Blur */}
-                    <div 
-                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300 animate-in fade-in" 
-                        onClick={() => setIsModalOpen(false)} 
+                    <div
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300 animate-in fade-in"
+                        onClick={() => setIsModalOpen(false)}
                     />
 
                     {/* Modal Content Container */}
                     <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
-                        
+
                         {/* Modal Title Header */}
                         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
                                     <ShieldCheck className="w-6 h-6" />
                                 </div>
-                                <h3 className="font-extrabold text-slate-800 text-xl tracking-tight uppercase tracking-widest">New System Admin</h3>
+                                <h3 className="font-extrabold text-slate-800 text-xl tracking-tight uppercase tracking-widest">New Admin</h3>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setIsModalOpen(false)}
                                 className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm group"
                             >
@@ -307,16 +351,16 @@ export default function AdminsPage() {
                         {/* Modal Body / Form Section (Scrollable) */}
                         <form onSubmit={handleCreateAdmin} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                
+
                                 {/* Full Name Field */}
                                 <div className="space-y-1.5 md:col-span-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity Name <span className="text-rose-500">*</span></label>
-                                    <input 
+                                    <input
                                         ref={firstInputRef}
-                                        type="text" 
+                                        type="text"
                                         placeholder="Full legal name of the admin"
                                         value={form.full_name}
-                                        onChange={(e) => setForm({...form, full_name: e.target.value})}
+                                        onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                                         className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.full_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"}`}
                                     />
                                     {errors.full_name && <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">{errors.full_name}</p>}
@@ -325,11 +369,11 @@ export default function AdminsPage() {
                                 {/* Email Field */}
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Work Email <span className="text-rose-500">*</span></label>
-                                    <input 
-                                        type="email" 
+                                    <input
+                                        type="email"
                                         placeholder="example@school.com"
                                         value={form.email}
-                                        onChange={(e) => setForm({...form, email: e.target.value})}
+                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
                                         className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"}`}
                                     />
                                     {errors.email && <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">{errors.email}</p>}
@@ -338,11 +382,11 @@ export default function AdminsPage() {
                                 {/* Phone Field */}
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact Number</label>
-                                    <input 
-                                        type="tel" 
+                                    <input
+                                        type="tel"
                                         placeholder="+91"
                                         value={form.phone}
-                                        onChange={(e) => setForm({...form, phone: e.target.value})}
+                                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
                                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
                                     />
                                 </div>
@@ -351,9 +395,9 @@ export default function AdminsPage() {
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">System Role <span className="text-rose-500">*</span></label>
                                     <div className="relative">
-                                        <select 
+                                        <select
                                             value={form.role}
-                                            onChange={(e) => setForm({...form, role: e.target.value})}
+                                            onChange={(e) => setForm({ ...form, role: e.target.value })}
                                             className={`w-full pl-5 pr-10 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all appearance-none ${errors.role ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"}`}
                                         >
                                             <option value="">Select Priority Level</option>
@@ -369,9 +413,9 @@ export default function AdminsPage() {
                                 <div className="space-y-1.5 font-bold">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 tracking-tighter">Operating Hub (School)</label>
                                     <div className="relative">
-                                        <select 
+                                        <select
                                             value={form.school_id}
-                                            onChange={(e) => setForm({...form, school_id: e.target.value})}
+                                            onChange={(e) => setForm({ ...form, school_id: e.target.value })}
                                             className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-black text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all appearance-none"
                                         >
                                             <option value="">Select Registry Hub</option>
@@ -386,10 +430,10 @@ export default function AdminsPage() {
                                 {/* DOB Field */}
                                 <div className="space-y-1.5 md:col-span-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Birth Timeline</label>
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         value={form.dob}
-                                        onChange={(e) => setForm({...form, dob: e.target.value})}
+                                        onChange={(e) => setForm({ ...form, dob: e.target.value })}
                                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
                                     />
                                 </div>
@@ -397,11 +441,11 @@ export default function AdminsPage() {
                                 {/* Address Field */}
                                 <div className="space-y-1.5 md:col-span-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Residential Coordinates</label>
-                                    <textarea 
-                                        rows={3} 
+                                    <textarea
+                                        rows={3}
                                         placeholder="Full physical address..."
                                         value={form.address}
-                                        onChange={(e) => setForm({...form, address: e.target.value})}
+                                        onChange={(e) => setForm({ ...form, address: e.target.value })}
                                         className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
                                     />
                                 </div>
@@ -427,7 +471,7 @@ export default function AdminsPage() {
                                             Authenticating & Deploying...
                                         </>
                                     ) : (
-                                        "Finalize Registry"
+                                        "Create Admin"
                                     )}
                                 </button>
                             </div>

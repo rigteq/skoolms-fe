@@ -120,11 +120,11 @@ export default function ClassesPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Classes Management</h1>
-                    <p className="text-slate-500 text-sm mt-1 font-medium">Configure academic years and manage classroom teacher assignments.</p>
+                    <p className="text-slate-500 text-sm mt-1 font-medium italic">Configure academic years and manage classroom teacher assignments.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-xl hover:shadow-lg transition-all shadow-md font-bold text-sm group"
+                    className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-2xl hover:shadow-xl transition-all shadow-lg font-bold text-sm group"
                 >
                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                     Add Class
@@ -155,8 +155,8 @@ export default function ClassesPage() {
                 </div>
 
                 {/* Responsive Table */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                         <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-bold uppercase tracking-wider text-[10px]">
                             <tr>
                                 <th className="px-6 py-4">ID</th>
@@ -165,10 +165,10 @@ export default function ClassesPage() {
                                 <th className="px-6 py-4">Class Teacher</th>
                                 <th className="px-6 py-4 text-center">Status</th>
                                 <th className="px-6 py-4">Date Stamped</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-6 py-4 text-center w-[120px]">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50">
+                        <tbody className="divide-y divide-slate-50 border-b border-slate-50">
                             {filteredClasses.length > 0 ? (
                                 filteredClasses.map((cls) => (
                                     <tr key={cls.id} className="hover:bg-slate-50/60 transition-colors group">
@@ -201,8 +201,8 @@ export default function ClassesPage() {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-sm ${!cls.is_deleted
-                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                                    : "bg-rose-50 text-rose-700 border border-rose-100"
+                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                                                : "bg-rose-50 text-rose-700 border border-rose-100"
                                                 }`}>
                                                 <span className={`w-1 h-1 rounded-full mr-1.5 ${!cls.is_deleted ? "bg-emerald-500" : "bg-rose-500"}`}></span>
                                                 {!cls.is_deleted ? "Active" : "Deleted"}
@@ -214,15 +214,15 @@ export default function ClassesPage() {
                                                 <span className="text-slate-400">Updated: <b className="text-slate-500 font-bold">{formatDate(cls.updated_at)}</b></span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-1 opacity-10 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
+                                        <td className="px-6 py-4  w-[120px]">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
                                                     <Eye className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit class">
+                                                <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit class">
                                                     <Edit className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Remove class">
+                                                <button className="p- text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Remove class">
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -265,106 +265,170 @@ export default function ClassesPage() {
 
             {/* Modal Implementation */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+
                     {/* Overlay */}
                     <div
-                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300"
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in"
                         onClick={() => setIsModalOpen(false)}
                     />
 
-                    {/* Modal Body */}
-                    <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                            <h3 className="font-bold text-slate-800 text-lg tracking-tight">Add New Class</h3>
+                    {/* Modal */}
+                    <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+
+                        {/* Header */}
+                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
+                                    <BookOpen className="w-6 h-6" />
+                                </div>
+                                <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
+                                    New Class
+                                </h3>
+                            </div>
+
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm"
+                                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all group"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateClass} className="p-6 space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Select School <span className="text-rose-500">*</span></label>
-                                <div className="relative text-black">
-                                    <select
-                                        value={form.school_id}
-                                        onChange={(e) => setForm({ ...form, school_id: e.target.value })}
-                                        className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm appearance-none focus:ring-4 outline-none transition-all font-medium ${errors.school_id ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                            }`}
-                                    >
-                                        <option value="">Select a school...</option>
-                                        {dummySchools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                    </select>
-                                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                </div>
-                                {errors.school_id && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.school_id}</p>}
-                            </div>
+                        {/* Form */}
+                        <form onSubmit={handleCreateClass} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1.5 font-bold">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Class Name <span className="text-rose-500">*</span></label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                                {/* School */}
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Select School <span className="text-rose-500">*</span>
+                                    </label>
+
+                                    <div className="relative">
+                                        <select
+                                            value={form.school_id}
+                                            onChange={(e) => setForm({ ...form, school_id: e.target.value })}
+                                            className={`w-full pl-5 pr-10 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 outline-none transition-all ${errors.school_id
+                                                ? "border-rose-300 focus:ring-rose-50"
+                                                : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                }`}
+                                        >
+                                            <option value="">Select a school...</option>
+                                            {dummySchools.map((s) => (
+                                                <option key={s.id} value={s.id}>{s.name}</option>
+                                            ))}
+                                        </select>
+
+                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    </div>
+
+                                    {errors.school_id && (
+                                        <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">
+                                            {errors.school_id}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Class Name */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Class Name <span className="text-rose-500">*</span>
+                                    </label>
+
                                     <input
                                         type="text"
+                                        placeholder="e.g. Class 10-A"
                                         value={form.class_name}
                                         onChange={(e) => setForm({ ...form, class_name: e.target.value })}
-                                        placeholder="e.g. Class 10-A"
-                                        className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm text-black focus:ring-4 outline-none transition-all font-medium ${errors.class_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                        className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.class_name
+                                            ? "border-rose-300 focus:ring-rose-50"
+                                            : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
                                             }`}
                                     />
-                                    {errors.class_name && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.class_name}</p>}
+
+                                    {errors.class_name && (
+                                        <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">
+                                            {errors.class_name}
+                                        </p>
+                                    )}
                                 </div>
+
+                                {/* Academic Year */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Academic Year <span className="text-rose-500">*</span></label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Academic Year <span className="text-rose-500">*</span>
+                                    </label>
+
                                     <input
                                         type="text"
+                                        placeholder="e.g. 2025-2026"
                                         value={form.academic_year}
                                         onChange={(e) => setForm({ ...form, academic_year: e.target.value })}
-                                        placeholder="e.g. 2025-2026"
-                                        className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm text-black focus:ring-4 outline-none transition-all font-medium ${errors.academic_year ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                        className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.academic_year
+                                            ? "border-rose-300 focus:ring-rose-50"
+                                            : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
                                             }`}
                                     />
-                                    {errors.academic_year && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.academic_year}</p>}
+
+                                    {errors.academic_year && (
+                                        <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">
+                                            {errors.academic_year}
+                                        </p>
+                                    )}
                                 </div>
+
+                                {/* Teacher */}
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Assign Class Teacher
+                                    </label>
+
+                                    <div className="relative">
+                                        <select
+                                            value={form.class_teacher_id}
+                                            onChange={(e) => setForm({ ...form, class_teacher_id: e.target.value })}
+                                            className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                        >
+                                            <option value="">Select a teacher...</option>
+                                            {dummyTeachers.map((t) => (
+                                                <option key={t.id} value={t.id}>{t.name}</option>
+                                            ))}
+                                        </select>
+
+                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Assign Class Teacher <span className="text-slate-400 text-xs font-medium">(Optional)</span></label>
-                                <div className="relative text-black">
-                                    <select
-                                        value={form.class_teacher_id}
-                                        onChange={(e) => setForm({ ...form, class_teacher_id: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all font-medium"
-                                    >
-                                        <option value="">Select a teacher...</option>
-                                        {dummyTeachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                                    </select>
-                                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                </div>
-                            </div>
-
-                            <div className="pt-4 flex gap-3">
+                            {/* Footer */}
+                            <div className="mt-10 flex gap-4">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+                                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all"
                                 >
-                                    Cancel
+                                    Cancel Operations
                                 </button>
+
                                 <button
-                                    disabled={isSubmitting}
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-bold rounded-xl shadow-lg shadow-[#4CAF50]/20 hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center min-h-[44px]"
+                                    disabled={isSubmitting}
+                                    className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl shadow-[#4CAF50]/30 hover:shadow-[#4CAF50]/40 transition-all disabled:opacity-50 flex items-center justify-center min-h-[56px]"
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Creating...
+                                            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                                            Processing...
                                         </>
-                                    ) : "Add Class"}
+                                    ) : (
+                                        "Create Class"
+                                    )}
                                 </button>
                             </div>
+
                         </form>
                     </div>
                 </div>

@@ -9,6 +9,39 @@ export default function SchoolsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showToast, setShowToast] = useState(false);
+    const [schools, setSchools] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSchools = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                const res = await fetch("http://localhost:5000/api/v1/schools", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`, // IMPORTANT
+                    },
+                });
+
+                const data = await res.json();
+                console.log("API RESPONSE:", data);
+
+                if (data.success) {
+                    setSchools(data.data); // ✅ store real data
+                } else {
+                    console.error("Failed to fetch schools");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSchools();
+    }, []);
 
     const [form, setForm] = useState({
         school_name: "",
@@ -22,17 +55,6 @@ export default function SchoolsPage() {
         email: ""
     });
 
-    const dummySchools = [
-        { id: "550e8400-e29b-41d4-a716-446655440000", school_name: "Green Valley International", address: "123 Education Lane, Delhi", phone: "+91 98765-43210", email: "contact@greenvalley.edu", created_at: "2024-01-10T08:00:00Z", updated_at: "2024-03-15T10:30:00Z", is_deleted: false },
-        { id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8", school_name: "St. Xavier's Academy", address: "45 Cathedral Road, Mumbai", phone: "+91 22-2456-7890", email: "info@stxaviers.ac.in", created_at: "2023-11-20T09:15:00Z", updated_at: "2024-02-28T14:45:00Z", is_deleted: false },
-        { id: "7d444840-9dc0-11d1-b245-5ffd6af44a91", school_name: "Modern Public School", address: "78 Heritage Mall, Bangalore", phone: "+91 80-2345-6789", email: "admin@mps.edu.in", created_at: "2024-02-05T11:00:00Z", updated_at: "2024-03-10T11:00:00Z", is_deleted: true },
-        { id: "e62d0bd1-71fb-464a-95f7-6a15cc906644", school_name: "Oakridge International", address: "Plot 23, Jubilee Hills, Hyderabad", phone: "+91 40-2354-1234", email: "admissions@oakridge.edu", created_at: "2023-12-15T08:45:00Z", updated_at: "2024-03-20T16:20:00Z", is_deleted: false },
-        { id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", school_name: "The Doon School", address: "Mall Road, Dehradun", phone: "+91 135-275-7001", email: "headmaster@doonschool.com", created_at: "2023-09-01T10:00:00Z", updated_at: "2024-01-15T09:30:00Z", is_deleted: false },
-        { id: "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8", school_name: "Little Angels School", address: "Sector 7, Sonipat", phone: "+91 130-223-4567", email: "office@littleangels.com", created_at: "2024-03-01T12:00:00Z", updated_at: "2024-03-01T12:00:00Z", is_deleted: false },
-        { id: "z9y8x7w6-v5u4-t3s2-r1q0-p9o8n7m6l5k4", school_name: "Global Indian School", address: "Knowledge Park, Pune", phone: "+91 20-2345-1122", email: "reachus@globalindian.edu", created_at: "2023-10-15T14:20:00Z", updated_at: "2024-02-12T13:10:00Z", is_deleted: true },
-        { id: "b2c3d4e5-f6g7-h8i9-j0k1-l2m3n4o5p6q7", school_name: "Presidency School", address: "Koramangala, Bangalore", phone: "+91 80-2553-9000", email: "contact@presidency.edu", created_at: "2024-01-25T09:00:00Z", updated_at: "2024-03-24T12:00:00Z", is_deleted: false }
-    ];
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -41,11 +63,10 @@ export default function SchoolsPage() {
         });
     };
 
-    const filteredSchools = dummySchools.filter(school =>
+    const filteredSchools = schools.filter(school =>
         school.school_name.toLowerCase().includes(pageSearch.toLowerCase()) ||
-        school.email.toLowerCase().includes(pageSearch.toLowerCase())
+        school.email?.toLowerCase().includes(pageSearch.toLowerCase())
     );
-
     const validate = () => {
         let isValid = true;
         const newErrors = { school_name: "", email: "" };
@@ -99,16 +120,16 @@ export default function SchoolsPage() {
     }, []);
 
     return (
-        <div className="p-8">
+        <div className="p-8 min-h-screen">
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Schools Management</h1>
-                    <p className="text-slate-500 text-sm mt-1 font-medium">Overview of all registered educational institutions in the system.</p>
+                    <p className="text-slate-500 text-sm mt-1 font-medium italic">Overview of all registered educational institutions in the system.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-xl hover:shadow-lg transition-all shadow-md font-bold text-sm group"
+                    className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-2xl hover:shadow-xl transition-all shadow-lg font-bold text-sm group"
                 >
                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                     Add School
@@ -140,94 +161,83 @@ export default function SchoolsPage() {
 
                 {/* Responsive Table */}
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                         <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-bold uppercase tracking-wider text-[10px]">
                             <tr>
-                                <th className="px-6 py-4">ID</th>
-                                <th className="px-6 py-4">School Details</th>
-                                <th className="px-6 py-4">Contact Info</th>
-                                <th className="px-6 py-4">Address</th>
+                                <th className="px-6 py-4 text-left">ID</th>
+                                <th className="px-6 py-4 text-left">School Details</th>
+                                <th className="px-6 py-4 text-left">Contact Info</th>
+                                <th className="px-6 py-4 text-left">Address</th>
                                 <th className="px-6 py-4 text-center">Status</th>
-                                <th className="px-6 py-4">Date Range</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-6 py-4 text-left">Date Range</th>
+                                <th className="px-6 py-4 text-center w-[120px]">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {filteredSchools.length > 0 ? (
+
+                        <tbody className="divide-y divide-slate-50 border-b border-slate-50">
+
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={7} className="px-8 py-32 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-4">
+
+                                            <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
+
+                                            <h3 className="text-lg font-bold text-slate-500">
+                                                Loading Schools...
+                                            </h3>
+
+                                            <p className="text-sm text-slate-400 italic">
+                                                Fetching school records from server
+                                            </p>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : filteredSchools.length > 0 ? (
+
                                 filteredSchools.map((school) => (
-                                    <tr key={school.id} className="hover:bg-slate-50/60 transition-colors group">
+                                    <tr key={school.id} className="hover:bg-slate-50/40 transition-all group/row">
                                         <td className="px-6 py-4">
-                                            <span className="font-mono bg-slate-100 px-2 py-1 rounded text-xs text-slate-700 font-bold">
-                                                {school.id.substring(0, 8)}
-                                            </span>
+                                            {school.id.substring(0, 8)}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-slate-800 text-[13px]">{school.school_name}</span>
-                                                <span className="text-[11px] text-slate-400 truncate max-w-[150px]">{school.id}</span>
-                                            </div>
+                                            {school.school_name}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-0.5">
-                                                <div className="flex items-center text-slate-600 font-semibold text-[12px]">
-                                                    <Search className="w-3 h-3 mr-1.5 text-slate-300" /> {school.email}
-                                                </div>
-                                                <div className="flex items-center text-slate-400 text-[11px] font-medium">
-                                                    <Phone className="w-3 h-3 mr-1.5 text-slate-300" /> {school.phone}
-                                                </div>
-                                            </div>
+                                            {school.email || "N/A"}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex items-start">
-                                                <MapPin className="w-3.5 h-3.5 mr-1.5 text-slate-300 mt-0.5" />
-                                                <span className="text-[12px] leading-relaxed max-w-[200px] font-medium">{school.address}</span>
-                                            </div>
+                                            {school.address || "N/A"}
                                         </td>
+
                                         <td className="px-6 py-4 text-center">
-                                            <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-sm ${!school.is_deleted
-                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
-                                                : "bg-rose-50 text-rose-700 border border-rose-100"
-                                                }`}>
-                                                {!school.is_deleted ? "Active" : "Deleted"}
+                                            <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!school.is_active ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!school.is_active ? "bg-emerald-500" : "bg-rose-500"}`}></span>
+                                                {!school.is_active ? "Active" : "Deleted"}
                                             </div>
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col text-[11px] gap-1">
-                                                <span className="text-slate-400">Created: <b className="text-slate-500 font-bold">{formatDate(school.created_at)}</b></span>
-                                                <span className="text-slate-400">Updated: <b className="text-slate-500 font-bold">{formatDate(school.updated_at)}</b></span>
-                                            </div>
+                                            {formatDate(school.created_at)}
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-1 opacity-10 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit school">
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Delete school">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+
+                                        <td className="px-6 py-4 w-[120px]">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Eye className="w-4 h-4" /></button>
+                                                <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"><Edit className="w-4 h-4" /></button>
+                                                <button className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-24 text-center">
-                                        <div className="flex flex-col items-center">
-                                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                                                <Search className="w-10 h-10 text-slate-300" />
-                                            </div>
-                                            <h3 className="text-xl font-bold text-slate-800 tracking-tight">No schools found</h3>
-                                            <p className="text-slate-500 text-sm mt-2 max-w-sm">We couldn't find any schools matching your search. Please check the spelling or try different filters.</p>
-                                            <button
-                                                onClick={() => setPageSearch("")}
-                                                className="mt-6 px-6 py-2 bg-slate-100 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-200 transition-colors"
-                                            >
-                                                Clear Search Result
-                                            </button>
-                                        </div>
+                                    <td colSpan={7} className="text-center py-20 text-slate-400 font-semibold">
+                                        No schools found
                                     </td>
                                 </tr>
                             )}
@@ -237,7 +247,7 @@ export default function SchoolsPage() {
 
                 {/* Pagination Bar */}
                 <div className="p-4 border-t border-slate-100 bg-slate-50/10 flex items-center justify-between text-xs text-slate-500 font-bold px-8">
-                    <span>Showing {filteredSchools.length} of {dummySchools.length} entries</span>
+                    <span>Showing {filteredSchools.length} of {schools.length} entries</span>
                     <div className="flex gap-2">
                         <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-40" disabled>Previous</button>
                         <button className="px-3 py-1.5 bg-[#4CAF50] text-white rounded-lg shadow-sm">1</button>
@@ -247,109 +257,157 @@ export default function SchoolsPage() {
             </div>
 
             {/* Modal & Toast */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-800">Add New School</h2>
-                                <p className="text-slate-500 text-xs mt-1 font-medium">Register a new institution to the platform.</p>
+            {
+                isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+                        {/* Overlay */}
+                        <div
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in"
+                            onClick={() => setIsModalOpen(false)}
+                        />
+
+                        {/* Modal */}
+                        <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+
+                            {/* Header */}
+                            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg">
+                                        <Plus className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
+                                        New School
+                                    </h3>
+                                </div>
+
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 transition-all"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-white hover:shadow-md rounded-xl transition-all text-slate-400 hover:text-slate-600">
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
 
-                        <form onSubmit={handleCreateSchool} className="p-8 space-y-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">School Name *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={form.school_name}
-                                        onChange={(e) => setForm({ ...form, school_name: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${errors.school_name ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-200 focus:border-[#4CAF50] focus:ring-4 focus:ring-[#4CAF50]/10'} outline-none transition-all font-medium text-sm`}
-                                        placeholder="e.g. Oxford Public School"
-                                    />
-                                    {errors.school_name && <p className="text-rose-500 text-[10px] mt-1.5 font-bold">{errors.school_name}</p>}
-                                </div>
+                            {/* Form */}
+                            <form onSubmit={handleCreateSchool} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
 
-                                <div>
-                                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
-                                    <input
-                                        type="email"
-                                        value={form.email}
-                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${errors.email ? 'border-rose-300 ring-4 ring-rose-50' : 'border-slate-200 focus:border-[#4CAF50] focus:ring-4 focus:ring-[#4CAF50]/10'} outline-none transition-all font-medium text-sm`}
-                                        placeholder="admin@school.com"
-                                    />
-                                    {errors.email && <p className="text-rose-500 text-[10px] mt-1.5 font-bold">{errors.email}</p>}
-                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Phone Number</label>
+                                    {/* School Name */}
+                                    <div className="space-y-1.5 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            School Name <span className="text-rose-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={form.school_name}
+                                            onChange={(e) => setForm({ ...form, school_name: e.target.value })}
+                                            placeholder="e.g. Oxford Public School"
+                                            className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.school_name
+                                                ? "border-rose-300 focus:ring-rose-50"
+                                                : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                }`}
+                                        />
+                                        {errors.school_name && (
+                                            <p className="text-[9px] text-rose-500 font-bold ml-1">{errors.school_name}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Email */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={form.email}
+                                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                            placeholder="admin@school.com"
+                                            className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email
+                                                ? "border-rose-300 focus:ring-rose-50"
+                                                : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                }`}
+                                        />
+                                        {errors.email && (
+                                            <p className="text-[9px] text-rose-500 font-bold ml-1">{errors.email}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Phone */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Contact Number
+                                        </label>
                                         <input
                                             type="text"
                                             value={form.phone}
                                             onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-[#4CAF50] focus:ring-4 focus:ring-[#4CAF50]/10 outline-none transition-all font-medium text-sm"
-                                            placeholder="+91 00000-00000"
+                                            placeholder="+91"
+                                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
                                         />
                                     </div>
-                                    <div>
-                                        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Address</label>
-                                        <input
-                                            type="text"
+
+                                    {/* Address */}
+                                    <div className="space-y-1.5 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Address
+                                        </label>
+                                        <textarea
+                                            rows={3}
                                             value={form.address}
                                             onChange={(e) => setForm({ ...form, address: e.target.value })}
-                                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-[#4CAF50] focus:ring-4 focus:ring-[#4CAF50]/10 outline-none transition-all font-medium text-sm"
-                                            placeholder="City, State"
+                                            placeholder="Full school address..."
+                                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
                                         />
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex gap-3 pt-4 border-t border-slate-100">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-6 py-3 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all font-bold text-sm"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="flex-[2] px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-xl shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transition-all font-bold text-sm flex items-center justify-center disabled:opacity-70"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                            Registering...
-                                        </>
-                                    ) : "Create School"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+                                {/* Footer */}
+                                <div className="mt-10 flex gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all"
+                                    >
+                                        Cancel Operations
+                                    </button>
 
-            {showToast && (
-                <div className="fixed bottom-8 right-8 z-[60] animate-in slide-in-from-right-10 duration-500">
-                    <div className="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center border-l-4 border-emerald-500">
-                        <div className="bg-emerald-500/20 p-2 rounded-lg mr-4">
-                            <CheckCircle className="w-6 h-6 text-emerald-500" />
-                        </div>
-                        <div>
-                            <p className="font-bold text-sm">Success!</p>
-                            <p className="text-slate-400 text-xs mt-0.5">School has been onboarded successfully.</p>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl hover:shadow-lg transition-all flex items-center justify-center"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                                                Creating...
+                                            </>
+                                        ) : (
+                                            "Create School"
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+
+            {
+                showToast && (
+                    <div className="fixed bottom-8 right-8 z-[60] animate-in slide-in-from-right-10 duration-500">
+                        <div className="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center border-l-4 border-emerald-500">
+                            <div className="bg-emerald-500/20 p-2 rounded-lg mr-4">
+                                <CheckCircle className="w-6 h-6 text-emerald-500" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-sm">Success!</p>
+                                <p className="text-slate-400 text-xs mt-0.5">School has been onboarded successfully.</p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }

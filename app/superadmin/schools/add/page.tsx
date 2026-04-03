@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { X, Loader2, CheckCircle } from "lucide-react";
+import { X, Loader2, CheckCircle, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function AddSchoolsPage() {
@@ -70,109 +70,149 @@ export default function AddSchoolsPage() {
         <div className="p-8 bg-slate-50/50 min-h-screen">
             {/* Modal Implementation */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+
                     {/* Overlay */}
                     <div
-                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300"
+                        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
                         onClick={() => router.push("/superadmin/schools")}
                     />
 
-                    {/* Modal Body */}
-                    <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                            <h3 className="font-bold text-slate-800 text-lg tracking-tight">Add New School</h3>
+                    {/* Modal */}
+                    <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col">
+
+                        {/* Header */}
+                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
+                                    <Plus className="w-6 h-6" />
+                                </div>
+                                <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
+                                    New School
+                                </h3>
+                            </div>
+
                             <button
                                 onClick={() => router.push("/superadmin/schools")}
-                                className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm"
+                                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-6 h-6" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateSchool} className="p-6 space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-bold text-slate-700 ml-1">School Name <span className="text-rose-500">*</span></label>
-                                <input
-                                    type="text"
-                                    autoFocus
-                                    value={form.school_name}
-                                    onChange={(e) => setForm({ ...form, school_name: e.target.value })}
-                                    placeholder="e.g. Green Valley Academy"
-                                    className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-4 outline-none transition-all placeholder:text-slate-400 font-medium ${errors.school_name
-                                        ? "border-rose-300 focus:ring-rose-50"
-                                        : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                        }`}
-                                />
-                                {errors.school_name && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase tracking-wider">{errors.school_name}</p>}
-                            </div>
+                        {/* Form */}
+                        <form onSubmit={handleCreateSchool} className="flex-1 overflow-y-auto p-8">
 
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Email <span className="text-slate-400 text-xs font-medium">(Optional)</span></label>
-                                <input
-                                    type="email"
-                                    value={form.email}
-                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                    placeholder="school@example.com"
-                                    className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm focus:ring-4 outline-none transition-all placeholder:text-slate-400 font-medium ${errors.email
-                                        ? "border-rose-300 focus:ring-rose-50"
-                                        : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                        }`}
-                                />
-                                {errors.email && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase tracking-wider">{errors.email}</p>}
-                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* School Name */}
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        School Name <span className="text-rose-500">*</span>
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        value={form.school_name}
+                                        onChange={(e) => setForm({ ...form, school_name: e.target.value })}
+                                        placeholder="e.g. Green Valley Academy"
+                                        className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none ${errors.school_name
+                                            ? "border-rose-300 focus:ring-rose-50"
+                                            : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                            }`}
+                                    />
+
+                                    {errors.school_name && (
+                                        <p className="text-[9px] text-rose-500 font-bold uppercase ml-1">
+                                            {errors.school_name}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Email */}
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Phone Number</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Email
+                                    </label>
+
+                                    <input
+                                        type="email"
+                                        value={form.email}
+                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                        placeholder="school@example.com"
+                                        className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none ${errors.email
+                                            ? "border-rose-300 focus:ring-rose-50"
+                                            : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                            }`}
+                                    />
+
+                                    {errors.email && (
+                                        <p className="text-[9px] text-rose-500 font-bold uppercase ml-1">
+                                            {errors.email}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Phone */}
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Phone Number
+                                    </label>
+
                                     <input
                                         type="tel"
                                         value={form.phone}
                                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
                                         placeholder="+91 00000-00000"
-                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium"
+                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
                                     />
                                 </div>
-                                <div className="space-y-1.5 flex flex-col">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Default Status</label>
-                                    <div className="flex-1 flex items-center px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed opacity-80">
-                                        <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-                                        <span className="text-[12px] font-bold text-slate-500 uppercase">Active</span>
-                                    </div>
+
+                                {/* Address */}
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                        Full Address
+                                    </label>
+
+                                    <textarea
+                                        rows={3}
+                                        value={form.address}
+                                        onChange={(e) => setForm({ ...form, address: e.target.value })}
+                                        placeholder="Enter full school address..."
+                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none resize-none"
+                                    />
                                 </div>
+
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Full Address</label>
-                                <textarea
-                                    rows={3}
-                                    value={form.address}
-                                    onChange={(e) => setForm({ ...form, address: e.target.value })}
-                                    placeholder="Enter the complete school address here..."
-                                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium resize-none"
-                                />
-                            </div>
+                            {/* Footer */}
+                            <div className="mt-10 flex gap-4">
 
-                            <div className="pt-4 flex gap-3">
                                 <button
                                     type="button"
                                     onClick={() => router.push("/superadmin/schools")}
-                                    className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+                                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50"
                                 >
-                                    Cancel
+                                    Cancel Operation
                                 </button>
+
                                 <button
-                                    disabled={isSubmitting}
                                     type="submit"
-                                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-bold rounded-xl shadow-lg shadow-[#4CAF50]/20 hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center min-h-[44px]"
+                                    disabled={isSubmitting}
+                                    className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl shadow-[#4CAF50]/30 flex items-center justify-center"
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Registering...
+                                            <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                                            Processing...
                                         </>
-                                    ) : "Add School"}
+                                    ) : (
+                                        "Create School"
+                                    )}
                                 </button>
+
                             </div>
+
                         </form>
                     </div>
                 </div>
