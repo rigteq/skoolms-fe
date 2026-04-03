@@ -66,28 +66,9 @@ export default function AdminDashboard() {
         }
 
         // Fetch latest students separately if not in summary
-        const now = new Date();
-
-        const startOfDay = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          0, 0, 0, 0
-        ).toISOString();
-
-        const endOfDay = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          23, 59, 59, 999
-        ).toISOString();
-
-        const studentRes = await fetch(
-          `http://localhost:5000/api/students?limit=5&sort=created_at:desc&created_at_gte=${startOfDay}&created_at_lte=${endOfDay}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const studentRes = await fetch("http://localhost:5000/api/students?limit=5&sort=created_at:desc", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (studentRes.ok) {
           const studentResult = await studentRes.json();
@@ -96,25 +77,9 @@ export default function AdminDashboard() {
             ? studentResult
             : studentResult?.data?.students ?? [];
 
-          const now = new Date();
-
-          // last 5 days (today + 4 previous days)
-          const fiveDaysAgo = new Date();
-          fiveDaysAgo.setDate(now.getDate() - 4);
-          fiveDaysAgo.setHours(0, 0, 0, 0);
-
-          const filteredStudents = students.filter((student: any) => {
-            const d = new Date(student.created_at);
-            return d >= fiveDaysAgo;
-          });
-
           setDashboardData(prev => ({
             ...prev,
-            latestStudents: filteredStudents
-              .sort((a: any, b: any) =>
-                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-              )
-              .slice(0, 5)
+            latestStudents: students
           }));
         }
       } catch (error) {
