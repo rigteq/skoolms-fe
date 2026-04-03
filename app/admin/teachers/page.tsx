@@ -196,7 +196,7 @@ export default function TeachersPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Teacher Updated Successfully ✅");
+                setSuccessMessage("Teacher Updated Successfully");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsEditModalOpen(false);

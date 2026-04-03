@@ -39,15 +39,21 @@ export default function AdminDashboard() {
         }
 
         // Fetch latest students separately if not in summary
-        const studentRes = await fetch("http://localhost:5000/api/v1/students?limit=5&sort=created_at:desc", {
+        const studentRes = await fetch("http://localhost:5000/api/students?limit=5&sort=created_at:desc", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (studentRes.ok) {
           const studentResult = await studentRes.json();
-          if (studentResult.success) {
-            setDashboardData(prev => ({ ...prev, latestStudents: studentResult.data.students || studentResult.data }));
-          }
+
+          const students = Array.isArray(studentResult)
+            ? studentResult
+            : studentResult?.data?.students ?? [];
+
+          setDashboardData(prev => ({
+            ...prev,
+            latestStudents: students
+          }));
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -90,7 +96,6 @@ export default function AdminDashboard() {
 
   const avatarColors = ['indigo', 'pink', 'teal', 'blue', 'violet', 'emerald', 'amber', 'rose'];
 
-  // ✅ Loading UI
 
   if (loading) {
     return (
