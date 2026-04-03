@@ -30,7 +30,16 @@ export default function TeachersPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [filterSubject, setFilterSubject] = useState("");
+
+    // UI/UX States
     const [showSuccess, setShowSuccess] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    // Edit/Delete States
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
 
     const itemsPerPage = 5;
 
@@ -39,6 +48,12 @@ export default function TeachersPage() {
         email: "",
         password: "",
         phone: "",
+        subject_specialization: ""
+    });
+
+    const [editFormData, setEditFormData] = useState({
+        full_name: "",
+        email: "",
         subject_specialization: ""
     });
 
@@ -131,6 +146,101 @@ export default function TeachersPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleEditChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+        const { name, value } = e.target;
+        setEditFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Edit Functionality
+    const handleEditClick = async (id: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`http://localhost:5000/api/teachers/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            if (data.success || data.data) {
+                const teacher = data.data || data;
+                setSelectedTeacher(teacher);
+                setEditFormData({
+                    full_name: teacher.full_name || "",
+                    email: teacher.email || "",
+                    subject_specialization: teacher.subject_specialization || ""
+                });
+                setIsEditModalOpen(true);
+            }
+        } catch (error) {
+            console.error("Error fetching teacher:", error);
+        }
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedTeacher) return;
+
+        setIsProcessing(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`http://localhost:5000/api/teachers/${selectedTeacher.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(editFormData)
+            });
+            console.log("TOKEN:", token);
+
+            const data = await res.json();
+            if (data.success) {
+                setSuccessMessage("Teacher Updated Successfully ✅");
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 3000);
+                setIsEditModalOpen(false);
+                fetchTeachers();
+            }
+        } catch (error) {
+            console.error("Update error:", error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    // Delete Functionality
+    const handleDeleteClick = (teacher: Teacher) => {
+        setSelectedTeacher(teacher);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!selectedTeacher) return;
+
+        setIsProcessing(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`http://localhost:5000/api/teachers/${selectedTeacher.id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setSuccessMessage("Teacher Deleted Successfully ✅");
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 3000);
+                setIsDeleteModalOpen(false);
+                setTeachers(prev => prev.filter(t => t.id !== selectedTeacher.id));
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -149,6 +259,7 @@ export default function TeachersPage() {
             const data = await res.json();
             if (data.success) {
                 // Success Popup Logic
+                setSuccessMessage("Teacher Added Successfully ✅");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
 
@@ -189,8 +300,8 @@ export default function TeachersPage() {
                             <Check className="w-6 h-6 stroke-[3]" />
                         </div>
                         <div>
-                            <p className="font-bold text-sm tracking-tight">Operation Successful</p>
-                            <p className="text-xs opacity-90 font-medium">Teacher added successfully to the system</p>
+                            <p className="font-bold text-sm tracking-tight">{successMessage || "Operation Successful"}</p>
+                            <p className="text-xs opacity-90 font-medium font-sans">Action completed successfully.</p>
                         </div>
                         <button onClick={() => setShowSuccess(false)} className="ml-2 hover:bg-white/10 p-1 rounded-lg transition-colors">
                             <X className="w-4 h-4" />
@@ -307,10 +418,16 @@ export default function TeachersPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-2 text-slate-400 hover:text-[#3b71ca] hover:bg-blue-50 rounded-lg transition-all" title="Edit">
+                                                <button
+                                                    onClick={() => handleEditClick(teacher.id)}
+                                                    className="p-2 text-slate-400 hover:text-[#3b71ca] hover:bg-blue-50 rounded-lg transition-all" title="Edit"
+                                                >
                                                     <Edit className="w-4 h-4" />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                                                <button
+                                                    onClick={() => handleDeleteClick(teacher)}
+                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete"
+                                                >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -347,8 +464,8 @@ export default function TeachersPage() {
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-1.5 rounded-lg shadow-sm transition-all ${currentPage === page
-                                        ? "bg-[#3b71ca] text-white"
-                                        : "border border-slate-200 hover:bg-white"
+                                    ? "bg-[#3b71ca] text-white"
+                                    : "border border-slate-200 hover:bg-white"
                                     }`}
                             >
                                 {page}
@@ -500,6 +617,129 @@ export default function TeachersPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* Edit Teacher Modal */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity"
+                        onClick={() => setIsEditModalOpen(false)}
+                    ></div>
+
+                    <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-100 font-sans">
+                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 text-slate-800">
+                            <div>
+                                <h2 className="text-xl font-bold tracking-tight">Edit Teacher Details</h2>
+                                <p className="text-slate-500 text-xs mt-0.5 font-medium tracking-tight">Update information for {selectedTeacher?.full_name}.</p>
+                            </div>
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 shadow-sm"
+                            >
+                                <Plus className="w-5 h-5 rotate-45" />
+                            </button>
+                        </div>
+
+                        <form className="p-8 space-y-6" onSubmit={handleUpdate}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
+                                    <input
+                                        name="full_name"
+                                        value={editFormData.full_name}
+                                        onChange={handleEditChange}
+                                        required
+                                        type="text"
+                                        placeholder="e.g. John Doe"
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email Address <span className="text-red-500">*</span></label>
+                                    <input
+                                        name="email"
+                                        value={editFormData.email}
+                                        onChange={handleEditChange}
+                                        required
+                                        type="email"
+                                        placeholder="john@school.com"
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Subject Specialization</label>
+                                    <select
+                                        name="subject_specialization"
+                                        value={editFormData.subject_specialization}
+                                        onChange={handleEditChange}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer"
+                                    >
+                                        <option value="">Select Subject</option>
+                                        <option value="math">Mathematics</option>
+                                        <option value="physics">Physics</option>
+                                        <option value="chemistry">Chemistry</option>
+                                        <option value="english">English</option>
+                                        <option value="science">Science</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-slate-100 flex items-center justify-end gap-3 mt-6">
+                                <button
+                                    type="button" onClick={() => setIsEditModalOpen(false)}
+                                    className="px-6 py-3 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isProcessing}
+                                    className="px-8 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {isProcessing && <div className="w-4 h-4 border-2 border-white/30 border-t-white animate-spin rounded-full"></div>}
+                                    {isProcessing ? "Updating..." : "Update Teacher"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity"
+                        onClick={() => setIsDeleteModalOpen(false)}
+                    ></div>
+
+                    <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-100 p-8 text-center font-sans">
+                        <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trash2 className="w-8 h-8" />
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-800 mb-2">Delete Teacher?</h2>
+                        <p className="text-slate-500 text-sm mb-8 font-medium">Are you sure you want to delete <span className="font-bold text-slate-700">{selectedTeacher?.full_name}</span>? This action cannot be undone.</p>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setIsDeleteModalOpen(false)}
+                                className="flex-1 px-6 py-3 text-slate-500 font-bold text-sm hover:bg-slate-50 rounded-xl transition-colors border border-slate-100"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                disabled={isProcessing}
+                                className="flex-1 px-6 py-3 bg-red-600 text-white font-bold text-sm rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-200/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {isProcessing && <div className="w-4 h-4 border-2 border-white/30 border-t-white animate-spin rounded-full"></div>}
+                                {isProcessing ? "Deleting..." : "Confirm Delete"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
