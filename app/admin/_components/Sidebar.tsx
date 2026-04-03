@@ -52,11 +52,10 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
-                active
+              className={`flex items-center px-4 py-3 rounded-lg transition-colors ${active
                   ? "bg-[#3b71ca]/10 text-[#3b71ca] font-bold shadow-sm"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+                }`}
             >
               <item.icon className={`w-5 h-5 mr-3 ${active ? "text-[#3b71ca]" : "text-slate-400"}`} />
               {item.name}
