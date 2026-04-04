@@ -1,18 +1,127 @@
 "use client";
 
 import {
-    Users,
-    GraduationCap,
-    ClipboardCheck,
-    DollarSign,
-    Download,
-    TrendingUp,
-    TrendingDown,
-    Activity,
-    PieChart
+    Users, GraduationCap, ClipboardCheck, DollarSign, Download, PieChart, FileText, Calendar
 } from "lucide-react";
+import { useState } from "react";
 
 export default function ReportsPage() {
+    const [reportType, setReportType] = useState("student");
+    const [classFilter, setClassFilter] = useState("");
+    const [dateFrom, setDateFrom] = useState("");
+    const [dateTo, setDateTo] = useState("");
+    const [generatedReport, setGeneratedReport] = useState<string | null>(null);
+
+    const handleGenerate = () => {
+        setGeneratedReport(reportType);
+    };
+
+    const renderTable = () => {
+        if (!generatedReport) return null;
+
+        if (generatedReport === "student") {
+            return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-400 border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Name</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Class</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Admission Date</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[1, 2, 3].map((i) => (
+                                <tr key={i} className="hover:bg-slate-50/50">
+                                    <td className="px-6 py-4 font-bold text-slate-800">Student {i}</td>
+                                    <td className="px-6 py-4">Class {classFilter || "10 A"}</td>
+                                    <td className="px-6 py-4">2026-01-0{i}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        if (generatedReport === "attendance") {
+            return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-400 border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Student</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Date</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[1, 2, 3].map((i) => (
+                                <tr key={i} className="hover:bg-slate-50/50">
+                                    <td className="px-6 py-4 font-bold text-slate-800">Student {i}</td>
+                                    <td className="px-6 py-4">{dateFrom || "2026-03-01"}</td>
+                                    <td className="px-6 py-4"><span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded font-bold text-[10px] uppercase">Present</span></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        if (generatedReport === "fee") {
+            return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-400 border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Student</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Amount</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[1, 2, 3].map((i) => (
+                                <tr key={i} className="hover:bg-slate-50/50">
+                                    <td className="px-6 py-4 font-bold text-slate-800">Student {i}</td>
+                                    <td className="px-6 py-4">$500</td>
+                                    <td className="px-6 py-4"><span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded font-bold text-[10px] uppercase">Paid</span></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        if (generatedReport === "staff") {
+            return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead className="bg-slate-50/50 text-slate-400 border-b border-slate-100">
+                            <tr>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Name</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Role</th>
+                                <th className="px-6 py-4 font-bold text-[10px] uppercase tracking-widest">Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {[1, 2, 3].map((i) => (
+                                <tr key={i} className="hover:bg-slate-50/50">
+                                    <td className="px-6 py-4 font-bold text-slate-800">Teacher {i}</td>
+                                    <td className="px-6 py-4">Science Teacher</td>
+                                    <td className="px-6 py-4">98%</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        return null;
+    };
+
     return (
         <>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
@@ -21,150 +130,99 @@ export default function ReportsPage() {
                         <PieChart className="w-7 h-7" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none">Analytics Dashboard</h1>
-                        <p className="text-slate-500 text-sm mt-2 font-bold uppercase tracking-widest text-[10px]">Comprehensive school performance reports.</p>
-                    </div>
-                </div>
-                <button className="flex items-center px-6 py-4 bg-white border-2 border-slate-100 text-slate-700 rounded-2xl hover:bg-slate-50 transition-all shadow-sm font-extrabold text-xs uppercase tracking-widest group">
-                    <Download className="w-4 h-4 mr-3 group-hover:translate-y-1 transition-transform" /> Export Analytics PDF
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-                {/* Stats Cards */}
-                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-100/50 transition-all group relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Total Students</p>
-                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">1,248</h3>
-                        </div>
-                        <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#3b71ca] border border-blue-100 shadow-sm leading-none">
-                            <Users className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="flex items-center">
-                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
-                            <TrendingUp className="w-3 h-3 mr-1" /> 12.5%
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
-                    </div>
-                </div>
-
-                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-indigo-100/50 transition-all group relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Total Faculty</p>
-                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">84</h3>
-                        </div>
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100 shadow-sm leading-none">
-                            <GraduationCap className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="flex items-center">
-                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
-                            <TrendingUp className="w-3 h-3 mr-1" /> 2.1%
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
-                    </div>
-                </div>
-
-                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-emerald-100/50 transition-all group relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Attendance</p>
-                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">94.2%</h3>
-                        </div>
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm leading-none">
-                            <ClipboardCheck className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="flex items-center">
-                        <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-rose-100 uppercase tracking-widest">
-                            <TrendingDown className="w-3 h-3 mr-1" /> 1.5%
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
-                    </div>
-                </div>
-
-                <div className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-amber-100/50 transition-all group relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Collection</p>
-                            <h3 className="text-3xl font-black text-slate-800 tabular-nums tracking-tighter">$124k</h3>
-                        </div>
-                        <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100 shadow-sm leading-none">
-                            <DollarSign className="w-6 h-6" />
-                        </div>
-                    </div>
-                    <div className="flex items-center">
-                        <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg flex items-center shadow-sm border border-emerald-100 uppercase tracking-widest">
-                            <TrendingUp className="w-3 h-3 mr-1" /> 8.4%
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-400 ml-3 uppercase tracking-tighter italic">vs last month</span>
+                        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight leading-none">Generate Reports</h1>
+                        <p className="text-slate-500 text-sm mt-2 font-bold uppercase tracking-widest text-[10px]">Generate and export school records.</p>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                    <div className="flex items-center mb-10">
-                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-[#3b71ca] mr-4 shadow-sm border border-blue-100">
-                            <Activity className="w-5 h-5" />
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Revenue Insights (2026)</h3>
+            {/* Top Filters */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">From Date</label>
+                        <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-[#3b71ca] outline-none" />
                     </div>
-                    <div className="h-64 flex items-end gap-3 justify-between pb-4">
-                        {[30, 45, 35, 60, 50, 75, 65, 85, 70, 95, 80, 100].map((h, i) => (
-                            <div key={i} className="flex-1 min-w-[12px] group relative h-full flex items-end">
-                                <div 
-                                    className="w-full bg-slate-50 rounded-full hover:bg-gradient-to-t hover:from-[#3b71ca] hover:to-blue-400 transition-all duration-500 cursor-pointer border border-slate-100 group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-blue-200" 
-                                    style={{ height: `${h}%` }}
-                                ></div>
-                                <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-black py-2 px-3 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all transform group-hover:-translate-y-1 z-20 pointer-events-none whitespace-nowrap">
-                                    ${h}k Monthly
-                                </div>
-                            </div>
-                        ))}
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">To Date</label>
+                        <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-[#3b71ca] outline-none" />
                     </div>
-                    <div className="flex justify-between mt-8 text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] border-t border-slate-50 pt-8">
-                        <span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Class</label>
+                        <select value={classFilter} onChange={(e) => setClassFilter(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-[#3b71ca] outline-none">
+                            <option value="">All Classes</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                        </select>
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Report Type</label>
+                        <select value={reportType} onChange={(e) => setReportType(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-[#3b71ca] outline-none font-bold text-[#3b71ca]">
+                            <option value="student">Student Report</option>
+                            <option value="attendance">Attendance Report</option>
+                            <option value="fee">Fee Report</option>
+                            <option value="staff">Staff Report</option>
+                        </select>
                     </div>
                 </div>
-
-                <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 relative">
-                    <div className="flex items-center mb-10">
-                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mr-4 shadow-sm border border-emerald-100">
-                            <PieChart className="w-5 h-5" />
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Attendance Distribution</h3>
-                    </div>
-                    <div className="flex flex-col items-center justify-center">
-                        <div className="w-56 h-56 rounded-full border-[32px] border-[#3b71ca] relative flex justify-center items-center shadow-[inset_0_4px_15px_rgba(0,0,0,0.05)] ring-[24px] ring-slate-50">
-                            <div className="absolute w-56 h-56 rounded-full border-[32px] border-emerald-400 border-l-transparent border-b-transparent transform rotate-[45deg] shadow-lg"></div>
-                            <div className="text-center z-10 bg-white w-36 h-36 rounded-full flex flex-col justify-center items-center shadow-2xl border border-slate-50">
-                                <p className="text-4xl font-black text-slate-800 leading-none">94%</p>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 leading-none">Student Success</p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 w-full mt-16 px-4">
-                            <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm flex items-center group hover:bg-white transition-all cursor-default overflow-hidden relative">
-                                <div className="absolute left-0 top-0 w-1.5 h-full bg-[#3b71ca]"></div>
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Present Rate</p>
-                                    <p className="text-xl font-black text-slate-800 leading-none">94.2%</p>
-                                </div>
-                            </div>
-                            <div className="bg-slate-50 p-5 rounded-[1.5rem] border border-slate-100 shadow-sm flex items-center group hover:bg-white transition-all cursor-default overflow-hidden relative">
-                                <div className="absolute left-0 top-0 w-1.5 h-full bg-emerald-400"></div>
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Absent Rate</p>
-                                    <p className="text-xl font-black text-slate-800 leading-none">5.8%</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="mt-6 flex justify-end">
+                    <button type="button" onClick={handleGenerate} className="px-8 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center cursor-pointer">
+                        <FileText className="w-4 h-4 mr-2" /> Generate Report
+                    </button>
                 </div>
             </div>
+
+            {/* Generated Report Section */}
+            {generatedReport && (
+                <div className="mt-8 transition-opacity duration-300">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-slate-800 capitalize">{generatedReport} Report Results</h2>
+                        <div className="flex gap-3">
+                            <button className="flex items-center px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all shadow-sm font-bold text-xs group">
+                                <Download className="w-4 h-4 mr-2 text-rose-500 group-hover:-translate-y-0.5 transition-transform" /> Download PDF
+                            </button>
+                            <button className="flex items-center px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all shadow-sm font-bold text-xs group">
+                                <Download className="w-4 h-4 mr-2 text-emerald-500 group-hover:-translate-y-0.5 transition-transform" /> Export Excel
+                            </button>
+                        </div>
+                    </div>
+                    {renderTable()}
+                </div>
+            )}
+            
+            {/* Quick Summary Cards below for when no report is generated, optional */}
+            {!generatedReport && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all cursor-pointer" onClick={() => {setReportType("student"); setGeneratedReport("student");}}>
+                         <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
+                             <GraduationCap className="w-6 h-6" />
+                         </div>
+                         <h3 className="font-bold text-slate-800">Student Report</h3>
+                         <p className="text-xs text-slate-500 mt-1">Total students, new admissions, class-wise count</p>
+                     </div>
+                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all cursor-pointer" onClick={() => {setReportType("attendance"); setGeneratedReport("attendance");}}>
+                         <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4">
+                             <Calendar className="w-6 h-6" />
+                         </div>
+                         <h3 className="font-bold text-slate-800">Attendance Report</h3>
+                         <p className="text-xs text-slate-500 mt-1">Daily / Monthly attendance, attendance %</p>
+                     </div>
+                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all cursor-pointer" onClick={() => {setReportType("fee"); setGeneratedReport("fee");}}>
+                         <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-4">
+                             <DollarSign className="w-6 h-6" />
+                         </div>
+                         <h3 className="font-bold text-slate-800">Fee Report</h3>
+                         <p className="text-xs text-slate-500 mt-1">Paid / Pending fees, total collection</p>
+                     </div>
+                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all cursor-pointer" onClick={() => {setReportType("staff"); setGeneratedReport("staff");}}>
+                         <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-4">
+                             <Users className="w-6 h-6" />
+                         </div>
+                         <h3 className="font-bold text-slate-800">Staff Report</h3>
+                         <p className="text-xs text-slate-500 mt-1">Total staff, Roles, Attendance</p>
+                     </div>
+                </div>
+            )}
         </>
     );
 }
