@@ -66,9 +66,28 @@ export default function AdminDashboard() {
         }
 
         // Fetch latest students separately if not in summary
-        const studentRes = await fetch("http://localhost:5000/api/students?limit=5&sort=created_at:desc", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const now = new Date();
+
+        const startOfDay = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          0, 0, 0, 0
+        ).toISOString();
+
+        const endOfDay = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+          23, 59, 59, 999
+        ).toISOString();
+
+        const studentRes = await fetch(
+          `http://localhost:5000/api/students?limit=5&sort=created_at:desc&created_at_gte=${startOfDay}&created_at_lte=${endOfDay}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (studentRes.ok) {
           const studentResult = await studentRes.json();
@@ -77,9 +96,25 @@ export default function AdminDashboard() {
             ? studentResult
             : studentResult?.data?.students ?? [];
 
+          const now = new Date();
+
+          // last 5 days (today + 4 previous days)
+          const fiveDaysAgo = new Date();
+          fiveDaysAgo.setDate(now.getDate() - 4);
+          fiveDaysAgo.setHours(0, 0, 0, 0);
+
+          const filteredStudents = students.filter((student: any) => {
+            const d = new Date(student.created_at);
+            return d >= fiveDaysAgo;
+          });
+
           setDashboardData(prev => ({
             ...prev,
-            latestStudents: students
+            latestStudents: filteredStudents
+              .sort((a: any, b: any) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+              )
+              .slice(0, 5)
           }));
         }
       } catch (error) {
@@ -92,6 +127,7 @@ export default function AdminDashboard() {
     fetchDashboard();
   }, []);
 
+  //  Helpers
   const getInitials = (name: string) => {
     if (!name) return "??";
     const parts = name.trim().split(/\s+/);
@@ -153,7 +189,10 @@ export default function AdminDashboard() {
           Admin Overview
         </h1>
         <div className="space-x-4">
-          <button className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition shadow-sm">
+          <button
+            onClick={() => router.push("/admin/reports")}
+            className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition shadow-sm"
+          >
             Generate Reports
           </button>
           <button
@@ -162,7 +201,7 @@ export default function AdminDashboard() {
             + Add New Student
           </button>
         </div>
-      </div>
+      </div >
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[

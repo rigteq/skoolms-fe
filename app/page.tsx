@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Check, CheckCircle2, Cloud, MessageCircle } from "lucide-react";
@@ -105,9 +106,9 @@ export default function LoginPage() {
           </ul>
 
           <div className="mt-10 lg:mt-4 xl:mt-6">
-            <button className="px-8 lg:px-5 xl:px-6 py-3.5 lg:py-2.5 xl:py-3 bg-gradient-to-r from-[#5bc460] to-[#44a048] hover:to-[#388E3C] text-white font-bold text-base lg:text-xs xl:text-sm rounded-xl shadow-xl shadow-green-500/20 transition-all hover:-translate-y-1 hover:shadow-green-500/30">
+            <Link href="/explore" className="inline-block px-8 lg:px-5 xl:px-6 py-3.5 lg:py-2.5 xl:py-3 bg-gradient-to-r from-[#5bc460] to-[#44a048] hover:to-[#388E3C] text-white font-bold text-base lg:text-xs xl:text-sm rounded-xl shadow-xl shadow-green-500/20 transition-all hover:-translate-y-1 hover:shadow-green-500/30">
               Explore Features Now
-            </button>
+            </Link>
           </div>
 
         </div>
@@ -170,9 +171,9 @@ export default function LoginPage() {
                 <input type="checkbox" className="w-4 h-4 rounded text-[#4CAF50] bg-slate-100 border-slate-300 focus:ring-[#4CAF50] focus:ring-opacity-25" />
                 <span className="ml-2 text-sm text-slate-600 font-medium">Remember me</span>
               </label>
-              <a href="#" className="text-sm font-bold text-[#3b71ca] hover:text-[#2a5298] transition-colors">
+              <Link href="/forgot-password" className="text-sm font-bold text-[#3b71ca] hover:text-[#2a5298] transition-colors">
                 Forgot Password?
-              </a>
+              </Link>
             </div>
 
             <button
