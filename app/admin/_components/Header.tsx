@@ -58,6 +58,7 @@ export default function Header() {
     item.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
@@ -71,10 +72,14 @@ export default function Header() {
         <input
           type="text"
           placeholder="Search student, teacher or ID..."
+<<<<<<< HEAD
           value={searchQuery}
           onChange={handleSearch}
           onFocus={() => { if (searchQuery) setShowResults(true); }}
           className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all shadow-inner border focus:border-opacity-50"
+=======
+          className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#3b71ca] outline-none transition-all shadow-inner"
+>>>>>>> 8286394 (Fix Login/Logout error.)
         />
         {showResults && searchQuery && (
           <div className="absolute top-full mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">

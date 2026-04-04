@@ -5,6 +5,8 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+
+
 export default function AdminDashboard() {
   const router = useRouter();
   //This stores dashboard values. Initially everything is 0 (default values). After API call → real data will come and replace this.
@@ -155,18 +157,12 @@ export default function AdminDashboard() {
         </h1>
         <div className="space-x-4">
           <button
-            onClick={() => router.push("/admin/reports")}
-            className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition shadow-sm"
-          >
-            Generate Reports
-          </button>
-          <button
             onClick={() => router.push("/admin/students?openModal=true")}
             className="px-4 py-2 bg-[#3b71ca] text-white rounded-lg shadow-md hover:bg-blue-700 transition font-medium text-sm">
             + Add New Student
           </button>
         </div>
-      </div >
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
