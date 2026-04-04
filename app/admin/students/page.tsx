@@ -6,6 +6,7 @@ import {
     Plus, Edit, Trash2, Filter, Check, X
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 
 
@@ -25,7 +26,7 @@ type ClassType = {
 };
 export default function StudentsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const searchParams = useSearchParams();
     const [students, setStudents] = useState<StudentType[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([]);
     const [loading, setLoading] = useState(true);
@@ -130,6 +131,12 @@ export default function StudentsPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (searchParams.get("openModal") === "true") {
+            setIsModalOpen(true);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchClasses = async () => {
