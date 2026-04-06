@@ -18,7 +18,7 @@ export default function TeachersPage() {
 
     const fetchTeachers = async () => {
         try {
-            const token = localStorage.getItem("token"); // ✅ ADD HERE
+            const token = localStorage.getItem("token"); //   ADD HERE
 
             console.log("Token:", token); // (optional debug)
 
@@ -53,7 +53,7 @@ export default function TeachersPage() {
     };
 
     useEffect(() => {
-        fetchTeachers();  // ✅ MUST
+        fetchTeachers();  //   MUST
     }, []);
 
     const formatDate = (dateString: string) => {

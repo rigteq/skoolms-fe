@@ -42,7 +42,9 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0">
       <div className="h-16 flex items-center px-6 border-b border-slate-100 flex-shrink-0">
-        <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
+        <Link href="/admin">
+          <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto cursor-pointer" priority />
+        </Link>
         <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase tracking-wider">Admin</span>
       </div>
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">

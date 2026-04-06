@@ -29,7 +29,7 @@ export default function SchoolsPage() {
                 console.log("API RESPONSE:", data);
 
                 if (data.success) {
-                    setSchools(data.data); // ✅ store real data
+                    setSchools(data.data); //   store real data
                 } else {
                     console.error("Failed to fetch schools");
                 }

@@ -6,6 +6,7 @@ import {
     Plus, Edit, Trash2, Filter, Check, X
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 
 
@@ -16,17 +17,24 @@ type StudentType = {
     parent_name: string;
     parent_phone: string | null;
     class_name: string;
+    class_id: string;
+};
+
+type ClassType = {
+    id: string;
+    class_name: string;
 };
 export default function StudentsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // ✅ States
+    const searchParams = useSearchParams();
     const [students, setStudents] = useState<StudentType[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedClass, setSelectedClass] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [classes, setClasses] = useState<ClassType[]>([]);
+
     const itemsPerPage = 5;
 
     // UI/UX States
@@ -44,19 +52,77 @@ export default function StudentsPage() {
         email: "",
         parent_name: "",
         parent_phone: "",
-        class_name: ""
+        class_id: "",
     });
+
+    const [addFormData, setAddFormData] = useState({
+        full_name: "",
+        email: "",
+        student_phone: "",
+        dob: "",
+        class_id: "",
+        parent_name: "",
+        parent_phone: "",
+        current_address: "",
+        permanent_address: ""
+    });
+
+    const handleAddChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setAddFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsProcessing(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch("http://localhost:5000/api/students", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(addFormData)
+            });
+
+            if (res.ok) {
+                setSuccessMessage("Student Added Successfully");
+                setShowSuccess(true);
+                setTimeout(() => setShowSuccess(false), 3000);
+                setIsModalOpen(false);
+                setAddFormData({
+                    full_name: "",
+                    email: "",
+                    student_phone: "",
+                    dob: "",
+                    class_id: "",
+                    parent_name: "",
+                    parent_phone: "",
+                    current_address: "",
+                    permanent_address: ""
+                });
+                fetchStudents();
+            } else {
+                console.error("Add failed:", await res.text());
+            }
+        } catch (error) {
+            console.error("Add error:", error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     const fetchStudents = async () => {
         try {
             setLoading(true);
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:5000/api/v1/students", {
+            const res = await fetch("http://localhost:5000/api/students", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
-            setStudents(data?.data || []);
-            setFilteredStudents(data?.data || []);
+            setStudents(data || []);
+            setFilteredStudents(data || []);
         } catch (err) {
             console.error(err);
             setStudents([]);
@@ -66,6 +132,35 @@ export default function StudentsPage() {
         }
     };
 
+    useEffect(() => {
+        if (searchParams.get("openModal") === "true") {
+            setIsModalOpen(true);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        const fetchClasses = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                const res = await fetch("http://localhost:5000/api/v1/classes", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    setClasses(data.data || data || []);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchClasses();
+    }, []);
     useEffect(() => {
         fetchStudents();
     }, []);
@@ -78,12 +173,12 @@ export default function StudentsPage() {
     const handleEditClick = async (id: string) => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:5000/api/v1/students/${id}`, {
+            const res = await fetch(`http://localhost:5000/api/students/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            const data = await res.json();
 
-            if (data.success || data.data) {
+            if (res.ok) {
+                const data = await res.json();
                 const student = data.data || data;
                 setSelectedStudent(student);
                 setEditFormData({
@@ -91,9 +186,11 @@ export default function StudentsPage() {
                     email: student.email || "",
                     parent_name: student.parent_name || "",
                     parent_phone: student.parent_phone || "",
-                    class_name: student.class_name || ""
+                    class_id: student.class_id || ""
                 });
                 setIsEditModalOpen(true);
+            } else {
+                console.error("Error fetching student:", await res.text());
             }
         } catch (error) {
             console.error("Error fetching student:", error);
@@ -107,7 +204,7 @@ export default function StudentsPage() {
         setIsProcessing(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:5000/api/v1/students/${selectedStudent.id}`, {
+            const res = await fetch(`http://localhost:5000/api/students/${selectedStudent.id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -116,13 +213,14 @@ export default function StudentsPage() {
                 body: JSON.stringify(editFormData)
             });
 
-            const data = await res.json();
-            if (data.success) {
-                setSuccessMessage("Student Updated Successfully ✅");
+            if (res.ok) {
+                setSuccessMessage("Student Updated Successfully");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsEditModalOpen(false);
                 fetchStudents();
+            } else {
+                console.error("Update failed:", await res.text());
             }
         } catch (error) {
             console.error("Update error:", error);
@@ -142,18 +240,20 @@ export default function StudentsPage() {
         setIsProcessing(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:5000/api/v1/students/${selectedStudent.id}`, {
+            const res = await fetch(`http://localhost:5000/api/students/${selectedStudent.id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            const data = await res.json();
-            if (data.success) {
-                setSuccessMessage("Student Deleted Successfully ✅");
+            if (res.ok) {
+                setSuccessMessage("Student Deleted Successfully");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsDeleteModalOpen(false);
                 setStudents(prev => prev.filter(s => s.id !== selectedStudent.id));
+                fetchStudents();
+            } else {
+                console.error("Delete failed:", await res.text());
             }
         } catch (error) {
             console.error("Delete error:", error);
@@ -162,7 +262,6 @@ export default function StudentsPage() {
         }
     };
 
-    // ✅ Filtering Logic
     useEffect(() => {
         const filtered = students.filter((student) => {
             const matchesSearch =
@@ -172,7 +271,7 @@ export default function StudentsPage() {
 
             const matchesClass =
                 selectedClass === "" ||
-                student.class_name.includes(selectedClass);
+                student.class_id === selectedClass;
 
             return matchesSearch && matchesClass;
         });
@@ -181,12 +280,9 @@ export default function StudentsPage() {
         setCurrentPage(1);
     }, [searchTerm, selectedClass, students]);
 
-    // ✅ Pagination Logic
     const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-
-    // ✅ Loading 
 
     if (loading) {
         return (
@@ -250,9 +346,12 @@ export default function StudentsPage() {
                             className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl bg-white text-sm font-bold outline-none focus:border-[#3b71ca] cursor-pointer"
                         >
                             <option value="">All Classes</option>
-                            <option value="10">Class 10</option>
-                            <option value="11">Class 11</option>
-                            <option value="12">Class 12</option>
+
+                            {classes.map((cls: ClassType) => (
+                                <option key={cls.id} value={cls.id}>
+                                    {cls.class_name}
+                                </option>
+                            ))}
                         </select>
                         <button className="flex items-center px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-colors text-sm font-bold">
                             <Filter className="w-4 h-4 mr-2" />
@@ -290,7 +389,7 @@ export default function StudentsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="px-2.5 py-1 bg-[#3b71ca]/10 text-[#3b71ca] rounded-md text-[10px] font-extrabold border border-[#3b71ca]/20 tracking-widest uppercase">{student.class_name}</span>
+                                        <span className="px-2.5 py-1 bg-[#3b71ca]/10 text-[#3b71ca] rounded-md text-[10px] font-extrabold border border-[#3b71ca]/20 tracking-widest uppercase">{classes.find((c: ClassType) => c.id === student.class_id)?.class_name || "N/A"}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -377,7 +476,7 @@ export default function StudentsPage() {
                             </button>
                         </div>
 
-                        <form className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+                        <form className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar" onSubmit={handleAddSubmit}>
                             {/* Basic Information */}
                             <section>
                                 <div className="flex items-center gap-2 mb-6">
@@ -387,19 +486,19 @@ export default function StudentsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
-                                        <input required type="text" placeholder="e.g. Michael Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                                        <input required name="full_name" value={addFormData.full_name} onChange={handleAddChange} type="text" placeholder="e.g. Michael Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email (Optional)</label>
-                                        <input type="email" placeholder="e.g. michael@student.edu" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                                        <input name="email" value={addFormData.email} onChange={handleAddChange} type="email" placeholder="e.g. michael@student.edu" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Phone Number <span className="text-red-500">*</span></label>
-                                        <input required type="tel" placeholder="e.g. +1 234-567-890" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                                        <input required name="student_phone" value={addFormData.student_phone} onChange={handleAddChange} type="tel" placeholder="e.g. +1 234-567-890" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Date of Birth</label>
-                                        <input type="date" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 font-bold cursor-pointer" />
+                                        <input name="dob" value={addFormData.dob} onChange={handleAddChange} type="date" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 font-bold cursor-pointer" />
                                     </div>
                                 </div>
                             </section>
@@ -413,11 +512,13 @@ export default function StudentsPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Assigned Class <span className="text-red-500">*</span></label>
-                                        <select required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
+                                        <select required name="class_id" value={addFormData.class_id} onChange={handleAddChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
                                             <option value="">Select Class</option>
-                                            <option value="10">Class 10</option>
-                                            <option value="11">Class 11</option>
-                                            <option value="12">Class 12</option>
+                                            {classes.map((cls) => (
+                                                <option key={cls.id} value={cls.id}>
+                                                    {cls.class_name}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                 </section>
@@ -429,11 +530,11 @@ export default function StudentsPage() {
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Name <span className="text-red-500">*</span></label>
-                                            <input required type="text" placeholder="e.g. Robert Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                                            <input required name="parent_name" value={addFormData.parent_name} onChange={handleAddChange} type="text" placeholder="e.g. Robert Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Phone <span className="text-red-500">*</span></label>
-                                            <input required type="tel" placeholder="e.g. +1 987-654-321" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                                            <input required name="parent_phone" value={addFormData.parent_phone} onChange={handleAddChange} type="tel" placeholder="e.g. +1 987-654-321" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
                                         </div>
                                     </div>
                                 </section>
@@ -447,18 +548,18 @@ export default function StudentsPage() {
                                         <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Address Details</h3>
                                     </div>
                                     <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#3b71ca] focus:ring-[#3b71ca]/20 cursor-pointer" />
+                                        <input type="checkbox" onChange={(e) => { if (e.target.checked) setAddFormData(prev => ({ ...prev, permanent_address: prev.current_address })) }} className="w-4 h-4 rounded border-slate-300 text-[#3b71ca] focus:ring-[#3b71ca]/20 cursor-pointer" />
                                         <span className="text-[10px] font-extrabold text-slate-500 group-hover:text-slate-700 transition-colors uppercase tracking-tight">Same as Current</span>
                                     </label>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Current Address <span className="text-red-500">*</span></label>
-                                        <textarea required rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                                        <textarea required name="current_address" value={addFormData.current_address} onChange={handleAddChange} rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Permanent Address</label>
-                                        <textarea rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                                        <textarea name="permanent_address" value={addFormData.permanent_address} onChange={handleAddChange} rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
                                     </div>
                                 </div>
                             </section>
@@ -473,9 +574,11 @@ export default function StudentsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-10 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
+                                    disabled={isProcessing}
+                                    className="px-10 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
-                                    Add Student
+                                    {isProcessing && <div className="w-4 h-4 border-2 border-white/30 border-t-white animate-spin rounded-full"></div>}
+                                    {isProcessing ? "Adding..." : "Add Student"}
                                 </button>
                             </div>
                         </form>
@@ -525,11 +628,19 @@ export default function StudentsPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Assigned Class <span className="text-red-500">*</span></label>
-                                    <select name="class_name" value={editFormData.class_name} onChange={handleEditChange} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
+                                    <select
+                                        name="class_id"
+                                        value={editFormData.class_id}
+                                        onChange={handleEditChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer"
+                                    >
                                         <option value="">Select Class</option>
-                                        <option value="10">Class 10</option>
-                                        <option value="11">Class 11</option>
-                                        <option value="12">Class 12</option>
+                                        {classes.map((cls) => (
+                                            <option key={cls.id} value={cls.id}>
+                                                {cls.class_name}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
