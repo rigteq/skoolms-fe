@@ -40,6 +40,7 @@ export default function TeachersPage() {
     class_name: string;
   };
 
+<<<<<<< HEAD
   const toggleClassId = (cls: ClassType) => {
     setForm((prev) => ({
       ...prev,
@@ -48,6 +49,11 @@ export default function TeachersPage() {
         : [...prev.class_ids, cls.id],
     }));
   };
+=======
+    const fetchTeachers = async () => {
+        try {
+            const token = localStorage.getItem("token"); //   ADD HERE
+>>>>>>> 895d5dc (Fix Bugs.)
 
   const fetchTeachers = async (classList: ClassType[], schoolList: any[]) => {
     try {
@@ -206,10 +212,16 @@ export default function TeachersPage() {
       class_ids: "",
     };
 
+<<<<<<< HEAD
     if (!form.full_name.trim()) {
       newErrors.full_name = "Teacher name is required";
       valid = false;
     }
+=======
+    useEffect(() => {
+        fetchTeachers();  //   MUST
+    }, []);
+>>>>>>> 895d5dc (Fix Bugs.)
 
     if (!form.email.trim()) {
       newErrors.email = "Email is required";
