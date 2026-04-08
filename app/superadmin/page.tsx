@@ -1,6 +1,23 @@
 "use client";
 import { useState, ChangeEvent, useEffect } from "react";
-import { LayoutDashboard, Users, ShieldCheck, BookOpen, GraduationCap, UserPlus, ClipboardCheck, FileText, Calendar, DollarSign, BarChart3, Settings, LogOut, Search, Bell, Plus } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  ShieldCheck,
+  BookOpen,
+  GraduationCap,
+  UserPlus,
+  ClipboardCheck,
+  FileText,
+  Calendar,
+  DollarSign,
+  BarChart3,
+  Settings,
+  LogOut,
+  Search,
+  Bell,
+  Plus,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -24,7 +41,7 @@ export default function SuperadminDashboard() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/api/v1/insights/summary", {
+        const res = await fetch("http://localhost:5000/api/insights/summary", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -37,13 +54,12 @@ export default function SuperadminDashboard() {
         }
 
         const result = await res.json();
-
+        console.log("INSIGHTS RESPONSE:", result);
         if (result.success) {
           setStats(result.data);
         } else {
           console.error("API returned error");
         }
-
       } catch (error) {
         console.error("Error fetching insights:", error);
       }
@@ -59,7 +75,7 @@ export default function SuperadminDashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:5000/api/v1/schools", {
+        const res = await fetch("http://localhost:5000/api/schools", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -94,16 +110,18 @@ export default function SuperadminDashboard() {
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans">
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-
         {/* Content */}
         <div className="flex-1 p-8">
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800 tracking tight">Welcome to SuperAdmin Dashboard</h1>
-              <p className="text-slate-500 text-sm mt-1 font-medium italic">Manage your entire school system efficiently.</p>
+              <h1 className="text-2xl font-bold text-slate-800 tracking tight">
+                Welcome to SuperAdmin Dashboard
+              </h1>
+              <p className="text-slate-500 text-sm mt-1 font-medium italic">
+                Manage your entire school system efficiently.
+              </p>
             </div>
             <button
               onClick={() => router.push("superadmin/schools/add")}
@@ -139,7 +157,9 @@ export default function SuperadminDashboard() {
           </div>
 
           <div className="overflow-x-auto">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Recent School Registrations</h2>
+            <h2 className="text-lg font-bold text-slate-800 mb-4">
+              Recent School Registrations
+            </h2>
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
               <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                 <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-bold uppercase tracking-wider text-[10px]">
@@ -155,7 +175,6 @@ export default function SuperadminDashboard() {
                     <tr>
                       <td colSpan={4} className="px-8 py-32 text-center">
                         <div className="flex flex-col items-center justify-center gap-4">
-
                           {/* Spinner */}
                           <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
 
@@ -168,7 +187,6 @@ export default function SuperadminDashboard() {
                           <p className="text-sm text-slate-400 italic">
                             Fetching school records from server
                           </p>
-
                         </div>
                       </td>
                     </tr>
@@ -179,8 +197,12 @@ export default function SuperadminDashboard() {
                         <td className="px-6 py-4">{school.email || "N/A"}</td>
                         <td className="px-6 py-4">Basic</td>
                         <td className="px-6 py-4 text-center">
-                          <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!school.is_active ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!school.is_active ? "bg-emerald-500" : "bg-rose-500"}`}></span>
+                          <div
+                            className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!school.is_active ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full mr-2 ${!school.is_active ? "bg-emerald-500" : "bg-rose-500"}`}
+                            ></span>
                             {!school.is_active ? "Active" : "Deleted"}
                           </div>
                         </td>
@@ -188,7 +210,10 @@ export default function SuperadminDashboard() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="text-center py-20 text-slate-400 font-semibold">
+                      <td
+                        colSpan={4}
+                        className="text-center py-20 text-slate-400 font-semibold"
+                      >
                         No schools found
                       </td>
                     </tr>
