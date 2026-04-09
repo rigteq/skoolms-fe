@@ -247,18 +247,16 @@ export default function TeachersPage() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase shadow-sm ${
-                          teacher.status === "Active"
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase shadow-sm ${teacher.status === "Active"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
                             : "bg-rose-50 text-rose-700 border border-rose-100"
-                        }`}
+                          }`}
                       >
                         <span
-                          className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                            teacher.status === "Active"
+                          className={`w-1.5 h-1.5 rounded-full mr-1.5 ${teacher.status === "Active"
                               ? "bg-emerald-500"
                               : "bg-rose-500"
-                          }`}
+                            }`}
                         ></span>
                         {teacher.status}
                       </div>
@@ -416,11 +414,10 @@ export default function TeachersPage() {
                         type="button"
                         onClick={() => toggleClassId(cls)}
                         className={`px-4 py-3 rounded-2xl text-xs font-bold border transition-all
-                                    ${
-                                      formData.class_ids.includes(cls)
-                                        ? "bg-[#4CAF50]/10 text-[#2E7D32] border-[#4CAF50]/20"
-                                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                                    }`}
+                                    ${formData.class_ids.includes(cls)
+                            ? "bg-[#4CAF50]/10 text-[#2E7D32] border-[#4CAF50]/20"
+                            : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                          }`}
                       >
                         {cls}
                       </button>

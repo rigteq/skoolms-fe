@@ -196,7 +196,7 @@ export default function TeachersPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Teacher Updated Successfully ✅");
+                setSuccessMessage("Teacher Updated Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsEditModalOpen(false);
@@ -228,7 +228,7 @@ export default function TeachersPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Teacher Deleted Successfully ✅");
+                setSuccessMessage("Teacher Deleted Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsDeleteModalOpen(false);
@@ -259,7 +259,7 @@ export default function TeachersPage() {
             const data = await res.json();
             if (data.success) {
                 // Success Popup Logic
-                setSuccessMessage("Teacher Added Successfully ✅");
+                setSuccessMessage("Teacher Added Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
 

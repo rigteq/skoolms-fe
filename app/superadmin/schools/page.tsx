@@ -335,11 +335,10 @@ export default function SchoolsPage() {
                       setForm({ ...form, school_name: e.target.value })
                     }
                     placeholder="e.g. Oxford Public School"
-                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${
-                      errors.school_name
+                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.school_name
                         ? "border-rose-300 focus:ring-rose-50"
                         : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                    }`}
+                      }`}
                   />
                   {errors.school_name && (
                     <p className="text-[9px] text-rose-500 font-bold ml-1">
@@ -360,11 +359,10 @@ export default function SchoolsPage() {
                       setForm({ ...form, email: e.target.value })
                     }
                     placeholder="admin@school.com"
-                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${
-                      errors.email
+                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email
                         ? "border-rose-300 focus:ring-rose-50"
                         : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                    }`}
+                      }`}
                   />
                   {errors.email && (
                     <p className="text-[9px] text-rose-500 font-bold ml-1">

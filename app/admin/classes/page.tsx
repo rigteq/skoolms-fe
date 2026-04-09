@@ -14,7 +14,7 @@ import {
 
 import { useState, useEffect } from "react";
 
-// ✅ TYPE
+//   TYPE
 type ClassType = {
     id: string;
     class_name: string;
@@ -109,7 +109,7 @@ export default function ClassesPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Class Updated Successfully ✅");
+                setSuccessMessage("Class Updated Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsEditModalOpen(false);
@@ -140,7 +140,7 @@ export default function ClassesPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Class Deleted Successfully ✅");
+                setSuccessMessage("Class Deleted Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsDeleteModalOpen(false);
@@ -153,7 +153,7 @@ export default function ClassesPage() {
         }
     };
 
-    // ✅ LOADING
+    //   LOADING
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[60vh]">

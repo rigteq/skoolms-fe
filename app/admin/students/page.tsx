@@ -20,7 +20,7 @@ type StudentType = {
 export default function StudentsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // ✅ States
+    //   States
     const [students, setStudents] = useState<StudentType[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<StudentType[]>([]);
     const [loading, setLoading] = useState(true);
@@ -118,7 +118,7 @@ export default function StudentsPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Student Updated Successfully ✅");
+                setSuccessMessage("Student Updated Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsEditModalOpen(false);
@@ -149,7 +149,7 @@ export default function StudentsPage() {
 
             const data = await res.json();
             if (data.success) {
-                setSuccessMessage("Student Deleted Successfully ✅");
+                setSuccessMessage("Student Deleted Successfully  ");
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
                 setIsDeleteModalOpen(false);
@@ -162,7 +162,7 @@ export default function StudentsPage() {
         }
     };
 
-    // ✅ Filtering Logic
+    //   Filtering Logic
     useEffect(() => {
         const filtered = students.filter((student) => {
             const matchesSearch =
@@ -181,12 +181,12 @@ export default function StudentsPage() {
         setCurrentPage(1);
     }, [searchTerm, selectedClass, students]);
 
-    // ✅ Pagination Logic
+    //   Pagination Logic
     const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
 
-    // ✅ Loading 
+    //   Loading 
 
     if (loading) {
         return (
