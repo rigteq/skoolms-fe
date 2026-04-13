@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export default function LoginPage() {
       }
     } catch (error: unknown) {
       if (error instanceof Error && (error.message.includes("Failed to fetch") || error.message.includes("NetworkError") || error instanceof TypeError)) {
-        toast.error("Server is unreachable. Please verify your connection and ensure the backend is running at port 5000.", { duration: 5000 });
+        toast.error("Server is unreachable. Please verify your connection and ensure the backend is running.", { duration: 5000 });
       } else if (error instanceof Error) {
         toast.error(error.message || "An unexpected error occurred during login.");
       } else {
