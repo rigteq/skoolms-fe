@@ -4,14 +4,72 @@ import { Search, Bell } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [allData, setAllData] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [showProfile, setShowProfile] = useState(false);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    console.log("Searching:", e.target.value);
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (!query) {
+      setShowResults(false);
+      return;
+    }
+
+    setShowResults(true);
+
+    if (allData.length === 0 && !isSearching) {
+      setIsSearching(true);
+      try {
+        const token = localStorage.getItem("token");
+
+        const [studentsRes, teachersRes] = await Promise.all([
+          fetch("http://localhost:5000/api/students", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("http://localhost:5000/api/teachers", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        let students = [];
+        if (studentsRes.ok) students = await studentsRes.json();
+        if (students.data) students = students.data;
+
+        let teachers = [];
+        if (teachersRes.ok) teachers = await teachersRes.json();
+        if (teachers.data) teachers = teachers.data;
+        else if (teachers.teachers) teachers = teachers.teachers;
+
+        const combined = [
+          ...(Array.isArray(students)
+            ? students.map((s) => ({ ...s, type: "Student" }))
+            : []),
+          ...(Array.isArray(teachers)
+            ? teachers.map((t) => ({ ...t, type: "Teacher" }))
+            : []),
+        ];
+
+        setAllData(combined);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsSearching(false);
+      }
+    }
   };
+
+  const filteredResults = allData.filter((item) =>
+    item.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -25,10 +83,13 @@ export default function Header() {
         <Search className="w-4 h-4 text-slate-400 absolute left-3 group-focus-within:text-[#4CAF50] transition-colors" />
         <input
           type="text"
-          value={search}
+          value={searchQuery}
           onChange={handleSearch}
-          placeholder="Search schools by name or email..."
-          className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all placeholder:text-slate-400 font-medium"
+          onFocus={() => {
+            if (searchQuery) setShowResults(true);
+          }}
+          placeholder="Search student, teacher..."
+          className="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all"
         />
       </div>
 

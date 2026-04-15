@@ -13,13 +13,15 @@ export default function ClassesPage() {
     const [loading, setLoading] = useState(true);
     const [schools, setSchools] = useState<any[]>([]);
     const [teachers, setTeachers] = useState<any[]>([]);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchClasses = async () => {
             try {
                 const token = localStorage.getItem("token");
 
-                const res = await fetch("http://localhost:5000/api/v1/classes", {
+                const res = await fetch("http://localhost:5000/api/classes", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -91,28 +93,98 @@ export default function ClassesPage() {
 
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!validate()) return;
 
         setIsSubmitting(true);
-        // Simulate API
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const payload = {
-            id: crypto.randomUUID(),
-            ...form,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            is_deleted: false
+        try {
+            const token = localStorage.getItem("token");
+
+            const payload = {
+                school_id: form.school_id,
+                class_name: form.class_name.trim(),
+                academic_year: form.academic_year.trim(),
+                class_teacher_id: form.class_teacher_id || null,
+            };
+
+            const res = await fetch("http://localhost:5000/api/classes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                alert(data.message || "Failed to create class");
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Refresh Class List
+            const classRes = await fetch("http://localhost:5000/api/classes", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const classData = await classRes.json();
+
+            if (classData.success) {
+                setClasses(classData.data);
+            }
+
+            setForm({
+                school_id: "",
+                class_name: "",
+                academic_year: "",
+                class_teacher_id: "",
+            });
+
+            setIsModalOpen(false);
+            setShowToast(true);
+
+            setTimeout(() => setShowToast(false), 3000);
+
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong while creating class");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchDropdowns = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                const [schoolRes, teacherRes] = await Promise.all([
+                    fetch("http://localhost:5000/api/schools", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    fetch("http://localhost:5000/api/teachers", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                ]);
+
+                const schoolData = await schoolRes.json();
+                const teacherData = await teacherRes.json();
+
+                if (schoolData.success) setSchools(schoolData.data);
+                if (teacherData.success) setTeachers(teacherData.data);
+
+            } catch (err) {
+                console.error("Dropdown fetch failed:", err);
+            }
         };
 
-        console.log("Mock API Payload (Classes):", payload);
-
-        setIsSubmitting(false);
-        setIsModalOpen(false);
-        setForm({ school_id: "", class_name: "", academic_year: "", class_teacher_id: "" });
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-    };
+        fetchDropdowns();
+    }, []);
 
     // Close on ESC
     useEffect(() => {
@@ -170,6 +242,7 @@ export default function ClassesPage() {
                             <tr>
                                 <th className="px-6 py-4 text-left">ID</th>
                                 <th className="px-6 py-4 text-left">Class Name</th>
+                                <th className="px-6 py-4 text-left">School Name</th>
                                 <th className="px-6 py-4 text-left">Class Teacher Name</th>
                                 <th className="px-6 py-4 text-left">Academic Year</th>
                                 <th className="px-6 py-4 text-center w-[120px]">Actions</th>
@@ -178,7 +251,7 @@ export default function ClassesPage() {
                         <tbody className="divide-y divide-slate-50 border-b border-slate-50">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={5} className="px-8 py-32 text-center">
+                                    <td colSpan={6} className="px-8 py-32 text-center">
                                         <div className="flex flex-col items-center justify-center gap-4">
 
                                             <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
@@ -197,18 +270,21 @@ export default function ClassesPage() {
                                 </tr>
                             ) : filteredClasses.length > 0 ? (
                                 filteredClasses.map((cls) => (
-                                    <tr key={cls.id} className="hover:bg-slate-50/60 transition-colors group">
+                                    <tr key={cls.id} className="hover:bg-slate-50/40 transition-all group/row">
 
                                         {/* ID */}
                                         <td className="px-6 py-4">
-                                            {cls.id.substring(0, 8)}
+                                            {cls.id.substring(0, 8) || "N/A"}
+                                        </td>
+
+                                        {/* School Name*/}
+                                        <td className="px-6 py-4">
+                                            {cls.class_name || "N/A"}
                                         </td>
 
                                         {/* Class */}
                                         <td className="px-6 py-4">
-                                            <div>
-                                                {cls.class_name}
-                                            </div>
+                                            {cls.school_name || "N/A"}
                                         </td>
 
                                         {/* Teacher */}
@@ -218,11 +294,8 @@ export default function ClassesPage() {
 
                                         {/* Academic Year */}
                                         <td className="px-6 py-4">
-                                            <div>
-                                                {cls.academic_year}
-                                            </div>
+                                            {cls.academic_year}
                                         </td>
-
 
                                         {/* Actions */}
                                         <td className="px-6 py-4 w-[120px]">
@@ -240,7 +313,7 @@ export default function ClassesPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={5} className="px-8 py-32 text-center">
+                                    <td colSpan={6} className="px-8 py-32 text-center">
                                         <h3 className="text-lg font-bold text-slate-400">No Classes Found</h3>
                                         <p className="text-slate-400 text-sm italic">Try adjusting your search filters or add a new class.</p>
                                     </td>
@@ -261,107 +334,185 @@ export default function ClassesPage() {
                 </div>
             </div>
 
-            {/* Modal Implementation */}
+            {/* Modal & Toast */}
             {
                 isModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
                         {/* Overlay */}
                         <div
-                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300"
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in"
                             onClick={() => setIsModalOpen(false)}
                         />
 
-                        {/* Modal Body */}
-                        <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
-                            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                                <h3 className="font-bold text-slate-800 text-lg tracking-tight">Add New Class</h3>
+                        {/* Modal */}
+                        <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+
+                            {/* Header */}
+                            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg">
+                                        <Plus className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
+                                        New Class
+                                    </h3>
+                                </div>
+
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="p-1.5 hover:bg-white rounded-full text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all shadow-sm"
+                                    className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 transition-all"
                                 >
-                                    <X className="w-5 h-5" />
+                                    <X className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleCreateClass} className="p-6 space-y-5">
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Select School <span className="text-rose-500">*</span></label>
-                                    <div className="relative text-black">
-                                        <select
-                                            value={form.school_id}
-                                            onChange={(e) => setForm({ ...form, school_id: e.target.value })}
-                                            className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm appearance-none focus:ring-4 outline-none transition-all font-medium ${errors.school_id ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
-                                                }`}
-                                        >
-                                            <option value="">Select a school...</option>
-                                            {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                        </select>
-                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    </div>
-                                    {errors.school_id && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.school_id}</p>}
-                                </div>
+                            {/* Form */}
+                            <form
+                                onSubmit={handleCreateClass}
+                                className="flex-1 overflow-y-auto p-8 custom-scrollbar"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5 font-bold">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Class Name <span className="text-rose-500">*</span></label>
+                                    {/* School */}
+                                    <div className="space-y-1.5 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Select School <span className="text-rose-500">*</span>
+                                        </label>
+
+                                        <div className="relative">
+                                            <select
+                                                value={form.school_id}
+                                                onChange={(e) =>
+                                                    setForm({ ...form, school_id: e.target.value })
+                                                }
+                                                className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 outline-none transition-all ${errors.school_id
+                                                    ? "border-rose-300 focus:ring-rose-50"
+                                                    : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                                    }`}
+                                            >
+                                                <option value="">Select a school...</option>
+                                                {schools.map((s) => (
+                                                    <option key={s.id} value={s.id}>
+                                                        {s.school_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                        </div>
+
+                                        {errors.school_id && (
+                                            <p className="text-[9px] text-rose-500 font-bold ml-1">
+                                                {errors.school_id}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Class Name */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Class Name <span className="text-rose-500">*</span>
+                                        </label>
+
                                         <input
                                             type="text"
                                             value={form.class_name}
-                                            onChange={(e) => setForm({ ...form, class_name: e.target.value })}
-                                            placeholder="e.g. Class 10-A"
-                                            className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm text-black focus:ring-4 outline-none transition-all font-medium ${errors.class_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                            onChange={(e) =>
+                                                setForm({ ...form, class_name: e.target.value })
+                                            }
+                                            placeholder="e.g. Grade 10"
+                                            className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.class_name
+                                                ? "border-rose-300 focus:ring-rose-50"
+                                                : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
                                                 }`}
                                         />
-                                        {errors.class_name && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.class_name}</p>}
+
+                                        {errors.class_name && (
+                                            <p className="text-[9px] text-rose-500 font-bold ml-1">
+                                                {errors.class_name}
+                                            </p>
+                                        )}
                                     </div>
+
+                                    {/* Academic Year */}
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Academic Year <span className="text-rose-500">*</span></label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Academic Year <span className="text-rose-500">*</span>
+                                        </label>
+
                                         <input
                                             type="text"
                                             value={form.academic_year}
-                                            onChange={(e) => setForm({ ...form, academic_year: e.target.value })}
-                                            placeholder="e.g. 2025-2026"
-                                            className={`w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm text-black focus:ring-4 outline-none transition-all font-medium ${errors.academic_year ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                            onChange={(e) =>
+                                                setForm({ ...form, academic_year: e.target.value })
+                                            }
+                                            placeholder="2025-2026"
+                                            className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.academic_year
+                                                ? "border-rose-300 focus:ring-rose-50"
+                                                : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
                                                 }`}
                                         />
-                                        {errors.academic_year && <p className="text-[10px] text-rose-500 font-bold ml-1 uppercase">{errors.academic_year}</p>}
+
+                                        {errors.academic_year && (
+                                            <p className="text-[9px] text-rose-500 font-bold ml-1">
+                                                {errors.academic_year}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Teacher */}
+                                    <div className="space-y-1.5 md:col-span-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                                            Assign Class Teacher
+                                        </label>
+
+                                        <div className="relative">
+                                            <select
+                                                value={form.class_teacher_id}
+                                                onChange={(e) =>
+                                                    setForm({
+                                                        ...form,
+                                                        class_teacher_id: e.target.value,
+                                                    })
+                                                }
+                                                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                                            >
+                                                <option value="">Select Teacher (Optional)</option>
+                                                {teachers.map((t) => (
+                                                    <option key={t.id} value={t.id}>
+                                                        {t.full_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Assign Class Teacher <span className="text-slate-400 text-xs font-medium">(Optional)</span></label>
-                                    <div className="relative text-black">
-                                        <select
-                                            value={form.class_teacher_id}
-                                            onChange={(e) => setForm({ ...form, class_teacher_id: e.target.value })}
-                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm appearance-none focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all font-medium"
-                                        >
-                                            <option value="">Select a teacher...</option>
-                                            {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                                        </select>
-                                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 flex gap-3">
+                                {/* Footer */}
+                                <div className="mt-10 flex gap-4">
                                     <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+                                        className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all"
                                     >
-                                        Cancel
+                                        Cancel Class
                                     </button>
+
                                     <button
-                                        disabled={isSubmitting}
                                         type="submit"
-                                        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-bold rounded-xl shadow-lg shadow-[#4CAF50]/20 hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center min-h-[44px]"
+                                        disabled={isSubmitting}
+                                        className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl hover:shadow-lg transition-all flex items-center justify-center"
                                     >
                                         {isSubmitting ? (
                                             <>
-                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                <Loader2 className="w-4 h-4 mr-3 animate-spin" />
                                                 Creating...
                                             </>
-                                        ) : "Add Class"}
+                                        ) : (
+                                            "Create Class"
+                                        )}
                                     </button>
                                 </div>
                             </form>
