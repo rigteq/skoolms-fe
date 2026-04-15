@@ -41,7 +41,7 @@ export default function SuperadminDashboard() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/api/insights/summary", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/insights/summary`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -56,7 +56,13 @@ export default function SuperadminDashboard() {
         const result = await res.json();
         console.log("INSIGHTS RESPONSE:", result);
         if (result.success) {
-          setStats(result.data);
+          setStats({
+            totalSchools: result.data?.totalSchools || result.totalSchools || 0,
+            totalTeachers: result.data?.totalTeachers || result.totalTeachers || 0,
+            totalStudents: result.data?.totalStudents || result.totalStudents || 0,
+            totalClasses: result.data?.totalClasses || result.totalClasses || 0,
+          });
+
         } else {
           console.error("API returned error");
         }
@@ -76,7 +82,7 @@ export default function SuperadminDashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:5000/api/schools", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schools`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -104,15 +110,23 @@ export default function SuperadminDashboard() {
     router.push("/");
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    });
+  };
+
   const filteredSchools = schools.filter((school) =>
     school.school_name.toLowerCase().includes(search.toLowerCase()) ||
     school.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans">
+    <div className="flex min-h-screen bg-slate-50">
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-y-auto">
         {/* Content */}
         <div className="flex-1 p-8">
           <div className="flex justify-between items-end mb-8">
@@ -124,13 +138,6 @@ export default function SuperadminDashboard() {
                 Manage your entire school system efficiently.
               </p>
             </div>
-            <button
-              onClick={() => router.push("/superadmin/schools/add")}
-              className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-2xl hover:shadow-xl transition-all shadow-lg font-bold text-sm group"
-            >
-              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-              Onboard School
-            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -193,16 +200,16 @@ export default function SuperadminDashboard() {
                   ) : filteredSchools.length > 0 ? (
                     filteredSchools.map((school) => (
                       <tr key={school.id}>
-                        <td className="px-6 py-4">{school.school_name}</td>
+                        <td className="px-6 py-4">{school.school_name || "N/A"}</td>
                         <td className="px-6 py-4">{school.email || "N/A"}</td>
-                        <td className="px-6 py-4">{school.phone}</td>
-                        <td className="px-6 py-4">{school.address}</td>
-                        <td className="px-6 py-4">{school.created_at}</td>
+                        <td className="px-6 py-4">{school.phone || "N/A"}</td>
+                        <td className="px-6 py-4">{school.address || "N/A"}</td>
+                        <td className="px-6 py-4">{school.created_at ? formatDate(school.created_at) : "N/A"}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="text-center py-20 text-slate-400 font-semibold">
+                      <td colSpan={5} className="text-center py-20 text-slate-400 font-semibold">
                         No schools found
                       </td>
                     </tr>

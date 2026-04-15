@@ -14,6 +14,8 @@ export default function StudentsPage() {
     const [students, setStudents] = useState<any[]>([]);
     const [schools, setSchools] = useState<any[]>([]);
     const [classes, setClasses] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [form, setForm] = useState({
         school_id: "",
         class_id: "",
@@ -26,6 +28,35 @@ export default function StudentsPage() {
         parent_name: "",
         parent_phone: ""
     });
+
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                setLoading(true); // start loading
+
+                const token = localStorage.getItem("token");
+
+                const res = await fetch("http://localhost:5000/api/students", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    setStudents(result.data);
+                }
+            } catch (error) {
+                console.error("Error fetching students:", error);
+            } finally {
+                setLoading(false); // stop loading
+            }
+        };
+
+        fetchStudents();
+    }, []);
+
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const formatDate = (dateString: string) => {
@@ -37,9 +68,9 @@ export default function StudentsPage() {
     };
 
     const filteredStudents = students.filter(student =>
-        student.full_name.toLowerCase().includes(pageSearch.toLowerCase()) ||
-        student.email.toLowerCase().includes(pageSearch.toLowerCase()) ||
-        student.phone.includes(pageSearch)
+        student.full_name?.toLowerCase().includes(pageSearch.toLowerCase()) ||
+        student.email?.toLowerCase().includes(pageSearch.toLowerCase()) ||
+        student.phone?.includes(pageSearch)
     );
 
     const validateForm = () => {
@@ -135,81 +166,73 @@ export default function StudentsPage() {
                     <table className="w-full text-left text-sm text-slate-600 border-collapse min-w-[1300px]">
                         <thead className="bg-slate-50/50 text-slate-500 border-b border-slate-100 font-extrabold uppercase tracking-widest text-[10px]">
                             <tr>
-                                <th className="px-6 py-4">Profile & ID</th>
-                                <th className="px-6 py-4">Personal Contact</th>
-                                <th className="px-6 py-4">Parental Info</th>
-                                <th className="px-6 py-4">Academic Track</th>
-                                <th className="px-6 py-4 text-center">Status</th>
-                                <th className="px-6 py-4">Registered</th>
+                                <th className="px-6 py-4 text-left">ID</th>
+                                <th className="px-6 py- text-left">Student Name</th>
+                                <th className="px-6 py-4 text-left">Email</th>
+                                <th className="px-6 py-4 text-left">DOB</th>
+                                <th className="px-6 py-4 text-left">Current Address</th>
+                                <th className="px-6 py-4 text-left">Parent Name</th>
+                                <th className="px-6 py-4 text-left">Phone</th>
+                                <th className="px-6 py-4 text-left">Class Name</th>
+                                <th className="px-6 py-4 text-left">School Name</th>
                                 <th className="px-6 py-4 text-center w-[120px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 border-b border-slate-50">
-                            {filteredStudents.length > 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={10} className="px-8 py-32 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-4">
+                                            <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
+                                            <h3 className="text-lg font-bold text-slate-500">Loading students...</h3>
+                                            <p className="text-sm text-slate-400 italic">
+                                                Fetching student records from server
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : filteredStudents.length > 0 ? (
                                 filteredStudents.map((student) => (
                                     <tr key={student.id} className="hover:bg-slate-50/40 transition-all group/row">
+
                                         <td className="px-6 py-4">
-                                            {student.full_name}
-                                            <span className="block text-[10px] text-slate-400 mt-1 uppercase font-mono tracking-tighter">UID: {student.id.substring(0, 8)}...</span>
-                                            <div className="flex items-center gap-1 mt-2 text-xs font-bold text-slate-500">
-                                                <Calendar className="w-3 h-3 text-slate-300" />
-                                                <span className="text-[10px] font-bold text-slate-500">{formatDate(student.dob)}</span>
-                                            </div>
+                                            {student.id.substring(0, 8) || "N/A"}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex items-center text-slate-600 font-bold text-[12px] group/item">
-                                                    <Mail className="w-3.5 h-3.5 mr-2 text-slate-300 group-hover/item:text-[#4CAF50] transition-colors" /> {student.email}
-                                                </div>
-                                                <div className="flex items-center text-slate-500 text-[12px] font-medium group/phone">
-                                                    <Phone className="w-3.5 h-3.5 mr-2 text-slate-300 group-hover/phone:text-[#4CAF50] transition-colors" /> {student.phone}
-                                                </div>
-                                                <div className="flex items-center text-slate-400 text-[11px] mt-1 italic">
-                                                    <MapPin className="w-3 h-3 mr-2 text-slate-200 flex-shrink-0" />
-                                                    <span className="truncate max-w-[180px]" title={student.current_address}>{student.current_address}</span>
-                                                </div>
-                                            </div>
+                                            {student.full_name || "N/A"}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="bg-slate-50/50 p-3 rounded-2xl border border-slate-100/50 group-hover/row:bg-white transition-colors">
-                                                <div className="flex items-center font-bold text-slate-700 text-[12px] mb-1.5">
-                                                    <User className="w-3 h-3 mr-2 text-[#4CAF50]" /> {student.parent_name}
-                                                </div>
-                                                <div className="text-[11px] text-slate-500 flex items-center font-medium">
-                                                    <Phone className="w-2.5 h-2.5 mr-2 text-slate-300" /> {student.parent_phone}
-                                                </div>
-                                            </div>
+                                            {student.email || "N/A"}
                                         </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-2">
-                                                <div className="inline-flex items-center px-2 py-1 bg-[#4CAF50]/5 text-[#4CAF50] rounded-lg text-[10px] font-black uppercase tracking-widest border border-[#4CAF50]/10 self-start">
-                                                    {student.class_name}
-                                                </div>
-                                                <div className="flex items-center text-slate-500 font-semibold text-[11px] ml-1">
-                                                    <ArrowRight className="w-3 h-3 mr-2 text-slate-300" /> {student.school_name}
-                                                </div>
-                                            </div>
+                                            {student.dob ? formatDate(student.dob) : "N/A"}
                                         </td>
-                                        <td className="px-6 py-4 text-center">
-                                            <div className={`inline-flex px-3 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest ${!student.is_deleted
-                                                ? "bg-emerald-50 text-emerald-700"
-                                                : "bg-rose-50 text-rose-700"
-                                                }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${!student.is_deleted ? "bg-emerald-500" : "bg-rose-500"}`}></span>
-                                                {!student.is_deleted ? "Active" : "Archived"}
-                                            </div>
-                                        </td>
+
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col text-[11px] gap-1 font-bold">
-                                                <span className="text-slate-400">Join: <b className="text-slate-600 font-extrabold">{formatDate(student.created_at)}</b></span>
-                                                <span className="text-slate-300 text-[10px] mt-0.5">Updated: {formatDate(student.updated_at)}</span>
-                                            </div>
+                                            {student.current_address || "N/A"}
                                         </td>
+
+                                        <td className="px-6 py-4">
+                                            {student.parent_name || "N/A"}
+                                        </td>
+
+                                        <td className="px-6 py-4">
+                                            {student.parent_phone || "N/A"}
+                                        </td>
+
+                                        <td className="px-6 py-4">
+                                            {student.class_name || "N/A"}
+                                        </td>
+
+                                        <td className="px-6 py-4">
+                                            {student.school_name || "N/A"}
+                                        </td>
+
                                         <td className="px-6 py-4 w-[120px]">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="View details">
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
                                                 <button className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Edit school">
                                                     <Edit className="w-4 h-4" />
                                                 </button>
@@ -222,7 +245,7 @@ export default function StudentsPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="px-8 py-32 text-center">
+                                    <td colSpan={10} className="px-8 py-32 text-center">
                                         <h3 className="text-lg font-bold text-slate-400">No Students Found</h3>
                                         <p className="text-slate-400 text-sm italic">Try adjusting your search filters or add a new student.</p>
                                     </td>
