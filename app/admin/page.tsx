@@ -5,6 +5,9 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+
+
+
 export default function AdminDashboard() {
   const router = useRouter();
   //This stores dashboard values. Initially everything is 0 (default values). After API call → real data will come and replace this.
@@ -201,8 +204,7 @@ export default function AdminDashboard() {
             + Add New Student
           </button>
         </div>
-      </div >
-
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           {
