@@ -27,6 +27,7 @@ export default function SuperadminDashboard() {
         const res = await fetch("http://localhost:5000/api/v1/insights/summary", {
           method: "GET",
           headers: {
+            
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
