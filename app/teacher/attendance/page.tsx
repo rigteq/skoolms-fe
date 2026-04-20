@@ -1,138 +1,398 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchContext } from "../SearchContext";
-import { ClipboardCheck, Search, ArrowLeft, ArrowRight, User } from "lucide-react";
+import {
+  ClipboardCheck,
+  Search,
+  ArrowLeft,
+  ArrowRight,
+  User,
+} from "lucide-react";
 
 export default function AttendancePage() {
   const { searchQuery } = useSearchContext();
+
   const [localSearch, setLocalSearch] = useState("");
-  const [currentDate, setCurrentDate] = useState(new Date("2026-03-27"));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
+  const [students, setStudents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // ===============================
+  // Safe Value
+  // ===============================
+  const safeValue = (value: any) => {
+    return value === null || value === undefined || value === ""
+      ? "N/A"
+      : value;
+  };
+
+  // ===============================
+  // Date Format
+  // ===============================
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
+  // ===============================
+  // Change Date
+  // ===============================
   const adjustDate = (days: number) => {
-    const nextDate = new Date(currentDate);
-    nextDate.setDate(currentDate.getDate() + days);
-    setCurrentDate(nextDate);
+    const next = new Date(currentDate);
+    next.setDate(currentDate.getDate() + days);
+    setCurrentDate(next);
   };
 
-  const [students] = useState([
-    { id: 1, name: "Aditya Verma", class: "10th Grade Math", email: "aditya.v@example.com", totalAttendance: "98%" },
-    { id: 2, name: "Priya Singh", class: "10th Grade Math", email: "priya.s@example.com", totalAttendance: "92%" },
-    { id: 3, name: "Rahul Sharma", class: "10th Grade Math", email: "rahul.sh@example.com", totalAttendance: "95%" },
-    { id: 4, name: "Sanya Gupta", class: "10th Grade Math", email: "sanya.g@example.com", totalAttendance: "88%" },
-    { id: 5, name: "Arjun Mehta", class: "10th Grade Math", email: "arjun.m@example.com", totalAttendance: "94%" },
-    { id: 6, name: "Ishita Rao", class: "10th Grade Math", email: "ishita.r@example.com", totalAttendance: "96%" },
-    { id: 7, name: "Deepak Chopra", class: "10th Grade Math", email: "deepak.c@example.com", totalAttendance: "85%" },
-    { id: 8, name: "Meera Reddy", class: "10th Grade Math", email: "meera.r@example.com", totalAttendance: "97%" },
-  ]);
+  // ===============================
+  // Normalize Actual Backend Data
+  // ===============================
+  const normalizeStudent = (std: any, index: number) => ({
+    id: std.id || index + 1,
 
+    name:
+      std.full_name ||
+      std.name ||
+      std.student_name ||
+      "N/A",
+
+    email:
+      std.email ||
+      std.student_email ||
+      "N/A",
+
+    class:
+      std.class_name ||
+      std.class?.class_name ||
+      std.class?.name ||
+      std.class ||
+      "N/A",
+
+    totalAttendance:
+      std.totalAttendance ||
+      std.attendance ||
+      std.attendance_percentage ||
+      "0%",
+  });
+
+  // ===============================
+  // Fetch Actual Students
+  // ===============================
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("No token found.");
+        return;
+      }
+
+      const res = await fetch(
+        "http://localhost:5000/api/students",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}`);
+      }
+
+      const result = await res.json();
+
+      console.log("Attendance API:", result);
+
+      const rawData = Array.isArray(result)
+        ? result
+        : Array.isArray(result?.data)
+          ? result.data
+          : Array.isArray(result?.students)
+            ? result.students
+            : Array.isArray(result?.result)
+              ? result.result
+              : [];
+
+      const formatted = rawData.map(normalizeStudent);
+
+      setStudents(formatted);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to fetch students");
+      setStudents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // ===============================
+  // Search
+  // ===============================
   const query = localSearch || searchQuery;
-  const filteredStudents = students.filter(s =>
-    s.name.toLowerCase().includes(query.toLowerCase()) ||
-    s.email.toLowerCase().includes(query.toLowerCase())
-  );
 
+  const filteredStudents = useMemo(() => {
+    return students.filter(
+      (student) =>
+        student.name
+          .toLowerCase()
+          .includes(query.toLowerCase()) ||
+        student.email
+          .toLowerCase()
+          .includes(query.toLowerCase()) ||
+        student.class
+          .toLowerCase()
+          .includes(query.toLowerCase())
+    );
+  }, [students, query]);
+
+  // ===============================
+  // Stats
+  // ===============================
   const stats = {
     total: students.length,
-    present: students.filter(s => parseFloat(s.totalAttendance) > 90).length,
-    critical: students.filter(s => parseFloat(s.totalAttendance) < 80).length,
+
+    present: students.filter(
+      (s) => parseFloat(s.totalAttendance) >= 90
+    ).length,
+
+    critical: students.filter(
+      (s) => parseFloat(s.totalAttendance) < 80
+    ).length,
   };
 
   return (
     <div className="p-6 lg:p-8 animate-in fade-in duration-300">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <ClipboardCheck className="w-8 h-8 text-[#4CAF50]" />
             Total Attendance Record
           </h1>
-          <p className="text-slate-500 mt-1">Viewing cumulative attendance performance for all students</p>
+
+          <p className="text-slate-500 mt-1">
+            Viewing cumulative attendance
+            performance for all students
+          </p>
         </div>
+
+        {/* Date */}
         <div className="flex items-center bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm">
-          <button onClick={() => adjustDate(-1)} className="p-2 text-slate-400 hover:text-[#4CAF50] transition-colors"><ArrowLeft className="w-5 h-5" /></button>
-          <span className="px-4 font-bold text-slate-700 min-w-[160px] text-center">{formatDate(currentDate)}</span>
-          <button onClick={() => adjustDate(1)} className="p-2 text-slate-400 hover:text-[#4CAF50] transition-colors"><ArrowRight className="w-5 h-5" /></button>
+          <button
+            onClick={() => adjustDate(-1)}
+            className="p-2 text-slate-400 hover:text-[#4CAF50]"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+
+          <span className="px-4 font-bold text-slate-700 min-w-[170px] text-center">
+            {formatDate(currentDate)}
+          </span>
+
+          <button
+            onClick={() => adjustDate(1)}
+            className="p-2 text-slate-400 hover:text-[#4CAF50]"
+          >
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col hover:border-[#4CAF50] transition-all">
-          <span className="text-slate-500 text-sm font-medium mb-1">Total Students</span>
-          <span className="text-3xl font-extrabold text-slate-800">{stats.total}</span>
-        </div>
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col hover:border-[#4CAF50] transition-all">
-          <span className="text-slate-500 text-sm font-medium mb-1 text-green-600">Above 90% Attendance</span>
-          <span className="text-3xl font-extrabold text-[#388E3C]">{stats.present}</span>
-        </div>
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col hover:border-[#4CAF50] transition-all">
-          <span className="text-slate-500 text-sm font-medium mb-1 text-red-600">Below 80% (Critical)</span>
-          <span className="text-3xl font-extrabold text-red-500">{stats.critical}</span>
-        </div>
+        <StatCard
+          title="Total Students"
+          value={stats.total}
+        />
+
+        <StatCard
+          title="Above 90% Attendance"
+          value={stats.present}
+          color="text-green-600"
+        />
+
+        <StatCard
+          title="Below 80% (Critical)"
+          value={stats.critical}
+          color="text-red-500"
+        />
       </div>
 
+      {/* Table */}
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Search */}
         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
           <div className="relative max-w-sm">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+
             <input
               type="text"
-              placeholder="Search by student name..."
+              placeholder="Search student..."
               value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:border-[#4CAF50] outline-none transition-all"
+              onChange={(e) =>
+                setLocalSearch(e.target.value)
+              }
+              className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm"
             />
           </div>
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold">
-                <th className="px-8 py-5 border-b border-slate-100">Student Info</th>
-                <th className="px-6 py-5 border-b border-slate-100">Class</th>
-                <th className="px-6 py-5 border-b border-slate-100 text-right">Total Attendance Percentage</th>
+              <tr className="bg-slate-50 text-xs uppercase text-slate-500">
+                <th className="px-8 py-5">
+                  Student Info
+                </th>
+                <th className="px-6 py-5">
+                  Class
+                </th>
+                <th className="px-6 py-5 text-right">
+                  Attendance %
+                </th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-slate-100">
-              {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-slate-50/10 transition-colors group">
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
-                         <User className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-800">{student.name}</div>
-                        <div className="text-xs text-slate-400 font-medium">{student.email}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5">
-                    <span className="text-sm font-medium text-slate-600">{student.class}</span>
-                  </td>
-                  <td className="px-6 py-5 text-right">
-                    <div className="inline-flex flex-col items-end">
-                      <span className={`text-lg font-bold ${parseFloat(student.totalAttendance) > 90 ? 'text-[#388E3C]' : parseFloat(student.totalAttendance) < 80 ? 'text-red-500' : 'text-slate-700'}`}>
-                        {student.totalAttendance}
-                      </span>
-                      <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden text-[0px]">.
-                        <div 
-                          className={`h-full rounded-full ${parseFloat(student.totalAttendance) > 90 ? 'bg-[#4CAF50]' : parseFloat(student.totalAttendance) < 80 ? 'bg-red-500' : 'bg-amber-400'}`}
-                          style={{ width: student.totalAttendance }}
-                        />
-                      </div>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="text-center py-8"
+                  >
+                    Loading students...
                   </td>
                 </tr>
-              ))}
+              ) : error ? (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="text-center py-8 text-red-500"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              ) : filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => {
+                  const percent =
+                    parseFloat(
+                      student.totalAttendance
+                    );
+
+                  return (
+                    <tr
+                      key={student.id}
+                      className="hover:bg-slate-50"
+                    >
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-slate-500" />
+                          </div>
+
+                          <div>
+                            <div className="font-bold text-slate-800">
+                              {safeValue(
+                                student.name
+                              )}
+                            </div>
+
+                            <div className="text-xs text-slate-400">
+                              {safeValue(
+                                student.email
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5">
+                        {safeValue(
+                          student.class
+                        )}
+                      </td>
+
+                      <td className="px-6 py-5 text-right">
+                        <div className="inline-flex flex-col items-end">
+                          <span
+                            className={`font-bold text-lg ${percent >= 90
+                                ? "text-green-600"
+                                : percent < 80
+                                  ? "text-red-500"
+                                  : "text-amber-500"
+                              }`}
+                          >
+                            {
+                              student.totalAttendance
+                            }
+                          </span>
+
+                          <div className="w-24 h-1.5 bg-slate-100 rounded-full mt-1 overflow-hidden">
+                            <div
+                              className={`h-full ${percent >= 90
+                                  ? "bg-green-500"
+                                  : percent < 80
+                                    ? "bg-red-500"
+                                    : "bg-amber-400"
+                                }`}
+                              style={{
+                                width:
+                                  student.totalAttendance,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="text-center py-8 text-slate-500"
+                  >
+                    No students found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Reusable Stat Card
+function StatCard({
+  title,
+  value,
+  color = "text-slate-800",
+}: any) {
+  return (
+    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+      <span className="text-sm text-slate-500 block mb-1">
+        {title}
+      </span>
+
+      <span className={`text-3xl font-bold ${color}`}>
+        {value}
+      </span>
     </div>
   );
 }
