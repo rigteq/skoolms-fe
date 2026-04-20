@@ -17,22 +17,12 @@ export default function TeacherDashboard() {
     assignmentNumber: ""
   });
 
-  const scheduleItems = [
-    { time: "09:00 AM", class: "8th Grade Science", room: "Room 102", status: "Completed", type: "past" },
-    { time: "11:30 AM", class: "10th Grade Math", room: "Room 205", status: "Upcoming", type: "next" },
-    { time: "01:00 PM", class: "12th Grade Advanced Calculus", room: "Lab 4", status: "Upcoming", type: "future" },
-    { time: "02:45 PM", class: "9th Grade Math", room: "Room 201", status: "Upcoming", type: "future" },
-  ].filter(item => 
+  const scheduleItems = ([] as Array<{ time: string; class: string; room: string; status: string; type: string }>).filter((item) => 
     item.class.toLowerCase().includes(searchQuery.toLowerCase()) || 
     item.room.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const submissions = [
-    { studentName: "Aditya Verma", class: "10th Grade Math", marks: "85/100", status: "Graded" },
-    { studentName: "Priya Singh", class: "12th Grade Science", marks: "Pending", status: "pending review" },
-    { studentName: "Rahul Sharma", class: "11th Grade physics", marks: "92/100", status: "reviewed" },
-    { studentName: "Sanya Gupta", class: "9th Grade Math", marks: "Pending", status: "pending review" },
-  ].filter(sub => 
+  const submissions = ([] as Array<{ studentName: string; class: string; marks: string; status: string }>).filter((sub) => 
     sub.studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
     sub.class.toLowerCase().includes(searchQuery.toLowerCase())
   );
