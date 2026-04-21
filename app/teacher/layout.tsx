@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, LayoutDashboard, Users, CalendarDays, FileSpreadsheet, MessageSquare, ClipboardCheck, BookOpen, Search, Bell, GraduationCap, ChevronDown, BarChart2 } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, CalendarDays, FileSpreadsheet, MessageSquare, ClipboardCheck, BookOpen, Search, Bell, GraduationCap, ChevronDown, BarChart2, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -33,6 +33,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [teacherName, setTeacherName] = useState("Teacher");
   const [teacherDept, setTeacherDept] = useState("Department");
   const [teacherInitials, setTeacherInitials] = useState("T");
@@ -82,10 +83,25 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
     <SearchProvider>
       <div className="flex h-screen bg-slate-50 font-sans">
         {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm z-20">
-        <div className="h-16 flex items-center px-6 border-b border-slate-100 flex-shrink-0">
-          <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
-          <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold uppercase tracking-wider">Staff</span>
+      {/* Mobile Backdrop */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+      <aside className={`w-64 bg-white border-r border-slate-200 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.05)] lg:shadow-sm z-50 fixed inset-y-0 lg:static transition-transform duration-300 ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 flex-shrink-0">
+          <div className="flex items-center">
+            <Image src="/skoolms.png" alt="Logo" width={110} height={28} className="object-contain w-auto h-auto" priority />
+            <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold uppercase tracking-wider">Staff</span>
+          </div>
+          <button 
+            className="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" 
+            onClick={() => setIsMobileSidebarOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navLinks.map((link, index) => {
@@ -103,8 +119,16 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative border-l border-slate-200 shadow-sm">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-8 z-10 flex-shrink-0 relative">
-          <HeaderSearch />
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0 relative w-full lg:w-auto">
+          <div className="flex items-center">
+            <button 
+              className="lg:hidden mr-3 p-2 text-slate-500 hover:text-[#4CAF50] hover:bg-green-50 rounded-lg transition-colors" 
+              onClick={() => setIsMobileSidebarOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <HeaderSearch />
+          </div>
           <div className="flex items-center space-x-6">
             <button className="relative p-2 text-slate-400 hover:text-[#4CAF50] transition-colors rounded-full hover:bg-green-50">
               <Bell className="w-5 h-5" />
