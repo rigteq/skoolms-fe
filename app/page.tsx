@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Check, CheckCircle2, Cloud, MessageCircle } from "lucide-react";
+import { Check, CheckCircle2, Cloud, MessageCircle, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Task 2: Handle remember me functionality
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +48,13 @@ export default function LoginPage() {
       const data = await response.json();
 
       toast.success("Login successful!");
+
+      // Update remembered email if checked
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
 
       // Set token for the frontend dashboard
       localStorage.setItem("token", data.token);
@@ -154,21 +172,35 @@ export default function LoginPage() {
 
             <div className="space-y-2 relative">
               <label htmlFor="password" className="block text-sm font-semibold text-slate-700 ml-1">Password</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-3.5 lg:px-3 lg:py-2 xl:px-4 xl:py-2.5 2xl:py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent transition-all placeholder:text-slate-400 text-base lg:text-xs xl:text-sm shadow-sm hover:border-slate-300"
-                placeholder="Enter your password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-5 py-3.5 lg:px-3 lg:py-2 xl:px-4 xl:py-2.5 2xl:py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent transition-all placeholder:text-slate-400 text-base lg:text-xs xl:text-sm shadow-sm hover:border-slate-300 pr-12"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5 lg:w-4 lg:h-4" /> : <Eye className="w-5 h-5 lg:w-4 lg:h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="flex justify-between items-center pt-2">
-              <label className="flex items-center">
-                <input type="checkbox" className="w-4 h-4 rounded text-[#4CAF50] bg-slate-100 border-slate-300 focus:ring-[#4CAF50] focus:ring-opacity-25" />
-                <span className="ml-2 text-sm text-slate-600 font-medium">Remember me</span>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded text-[#4CAF50] bg-slate-100 border-slate-300 focus:ring-[#4CAF50] focus:ring-opacity-25 cursor-pointer"
+                />
+                <span className="ml-2 text-sm text-slate-600 font-medium select-none">Remember me</span>
               </label>
               <a href="#" className="text-sm font-bold text-[#3b71ca] hover:text-[#2a5298] transition-colors">
                 Forgot Password?
