@@ -360,7 +360,10 @@ export default function AdminsPage() {
                                         type="text"
                                         placeholder="Full legal name of the admin"
                                         value={form.full_name}
-                                        onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/[^a-zA-Z\s.]/g, '');
+                                            setForm({ ...form, full_name: val });
+                                        }}
                                         className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.full_name ? "border-rose-300 focus:ring-rose-50" : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"}`}
                                     />
                                     {errors.full_name && <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wider ml-1">{errors.full_name}</p>}

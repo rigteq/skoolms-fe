@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3b71ca]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4CAF50]"></div>
         <p className="ml-3 text-lg font-semibold text-slate-600">Loading data...</p>
       </div>
     );
@@ -106,10 +106,10 @@ export default function AdminDashboard() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Admin Overview</h1>
         <div className="space-x-4">
-          <button className="px-4 py-2 text-[#3b71ca] bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 font-medium text-sm transition shadow-sm">Generate Reports</button>
+          <button className="px-4 py-2 text-[#4CAF50] bg-[#4CAF50]/5 border border-[#4CAF50]/20 rounded-lg border-[#4CAF50]/10 font-medium text-sm transition shadow-sm">Generate Reports</button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-[#3b71ca] text-white rounded-lg shadow-md hover:bg-blue-700 transition font-medium text-sm">+ Add New Student</button>
+            className="px-4 py-2 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white rounded-lg shadow-md hover:shadow-lg transition font-medium text-sm">+ Add New Student</button>
         </div>
       </div>
 
@@ -139,25 +139,25 @@ export default function AdminDashboard() {
               {/* Basic Information */}
               <section>
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                  <div className="w-1.5 h-6 bg-[#4CAF50] rounded-full shadow-[0_0_8px_rgba(76,175,80,0.4)]"></div>
                   <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Basic Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Full Name <span className="text-red-500">*</span></label>
-                    <input required type="text" placeholder="e.g. Michael Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                    <input required type="text" placeholder="e.g. Michael Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Email (Optional)</label>
-                    <input type="email" placeholder="e.g. michael@student.edu" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                    <input type="email" placeholder="e.g. michael@student.edu" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Phone Number <span className="text-red-500">*</span></label>
-                    <input required type="tel" placeholder="e.g. +1 234-567-890" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                    <input required type="tel" placeholder="e.g. +1 234-567-890" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Date of Birth</label>
-                    <input type="date" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 font-bold cursor-pointer" />
+                    <input type="date" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all text-slate-700 font-bold cursor-pointer" />
                   </div>
                 </div>
               </section>
@@ -166,12 +166,12 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <section>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <div className="w-1.5 h-6 bg-[#4CAF50] rounded-full shadow-[0_0_8px_rgba(76,175,80,0.4)]"></div>
                     <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Academic</h3>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Assigned Class <span className="text-red-500">*</span></label>
-                    <select required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all text-slate-700 cursor-pointer">
+                    <select required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all text-slate-700 cursor-pointer">
                       <option value="">Select Class</option>
                       <option value="10">Class 10</option>
                       <option value="11">Class 11</option>
@@ -181,17 +181,17 @@ export default function AdminDashboard() {
                 </section>
                 <section>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <div className="w-1.5 h-6 bg-[#4CAF50] rounded-full shadow-[0_0_8px_rgba(76,175,80,0.4)]"></div>
                     <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Parent Info</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Name <span className="text-red-500">*</span></label>
-                      <input required type="text" placeholder="e.g. Robert Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                      <input required type="text" placeholder="e.g. Robert Scott" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Parent Phone <span className="text-red-500">*</span></label>
-                      <input required type="tel" placeholder="e.g. +1 987-654-321" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all placeholder:text-slate-400 font-medium" />
+                      <input required type="tel" placeholder="e.g. +1 987-654-321" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all placeholder:text-slate-400 font-medium" />
                     </div>
                   </div>
                 </section>
@@ -201,22 +201,22 @@ export default function AdminDashboard() {
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-6 bg-[#3b71ca] rounded-full shadow-[0_0_8px_rgba(59,113,202,0.4)]"></div>
+                    <div className="w-1.5 h-6 bg-[#4CAF50] rounded-full shadow-[0_0_8px_rgba(76,175,80,0.4)]"></div>
                     <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Address Details</h3>
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer group">
-                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#3b71ca] focus:ring-[#3b71ca]/20 cursor-pointer" />
+                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#4CAF50] focus:ring-[#4CAF50]/20 cursor-pointer" />
                     <span className="text-[10px] font-extrabold text-slate-500 group-hover:text-slate-700 transition-colors uppercase tracking-tight">Same as Current</span>
                   </label>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Current Address <span className="text-red-500">*</span></label>
-                    <textarea required rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                    <textarea required rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-slate-700 ml-1 uppercase tracking-tight">Permanent Address</label>
-                    <textarea rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#3b71ca]/10 focus:border-[#3b71ca] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
+                    <textarea rows={3} placeholder="Full street address..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none font-medium placeholder:text-slate-400"></textarea>
                   </div>
                 </div>
               </section>
@@ -231,7 +231,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-10 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
+                  className="px-10 py-3 bg-[#4CAF50] text-white font-bold text-sm rounded-xl hover:bg-[#2E7D32] transition-all shadow-lg shadow-[#4CAF50]/30"
                 >
                   Add Student
                 </button>
@@ -266,7 +266,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 overflow-hidden flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-slate-800">Latest Student Enrollments</h2>
-            <Link href="/admin/students" className="text-sm text-[#3b71ca] font-bold hover:underline">View All</Link>
+            <Link href="/admin/students" className="text-sm text-[#4CAF50] font-bold hover:underline">View All</Link>
           </div>
 
           <div className="overflow-x-auto -mx-6">
@@ -317,10 +317,10 @@ export default function AdminDashboard() {
               { title: "Fee Reminders", desc: "Automate pending fee SMS alerts", icon: "💰" },
               { title: "Generate ID Cards", desc: "Bulk print student ID templates", icon: "🆔" }
             ].map((action, i) => (
-              <button key={i} className="w-full text-left px-6 py-5 rounded-2xl border border-slate-100 bg-slate-50/30 hover:border-blue-300 hover:bg-blue-50/50 transition-all group flex gap-4 items-center">
+              <button key={i} className="w-full text-left px-6 py-5 rounded-2xl border border-slate-100 bg-slate-50/30 hover:border-[#4CAF50]/40 hover:bg-[#4CAF50]/5/50 transition-all group flex gap-4 items-center">
                 <span className="text-3xl opacity-90 group-hover:scale-110 transition-transform shrink-0">{action.icon}</span>
                 <div>
-                  <span className="block font-bold text-slate-800 group-hover:text-blue-700 text-base">{action.title}</span>
+                  <span className="block font-bold text-slate-800 group-hover:text-[#2E7D32] text-base">{action.title}</span>
                   <span className="text-xs text-slate-500 mt-1 block font-medium leading-relaxed">{action.desc}</span>
                 </div>
               </button>

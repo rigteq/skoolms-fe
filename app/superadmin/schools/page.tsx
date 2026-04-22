@@ -301,7 +301,10 @@ export default function SchoolsPage() {
                                         <input
                                             type="text"
                                             value={form.school_name}
-                                            onChange={(e) => setForm({ ...form, school_name: e.target.value })}
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/[^a-zA-Z\s.]/g, '');
+                                                setForm({ ...form, school_name: val });
+                                            }}
                                             placeholder="e.g. Oxford Public School"
                                             className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.school_name
                                                 ? "border-rose-300 focus:ring-rose-50"
