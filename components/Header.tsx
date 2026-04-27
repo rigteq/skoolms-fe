@@ -27,6 +27,7 @@ export default function Header() {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 sticky top-0">
+<<<<<<< HEAD
       {/* Search */}
       <div className="flex items-center w-96 relative group">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 group-focus-within:text-[#4CAF50] transition-colors" />
@@ -42,6 +43,9 @@ export default function Header() {
         />
       </div>
 
+=======
+      <div></div>
+>>>>>>> ee406cc (Rebase)
       {/* Right Side */}
       <div className="flex items-center space-x-6">
         {/* Notification */}
@@ -64,13 +68,7 @@ export default function Header() {
 
           {showProfile && (
             <div className="absolute right-0 mt-3 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-20 overflow-hidden">
-              <button
-                onClick={() => router.push("/profile")}
-                className="block w-full text-left px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-              >
-                My Profile
-              </button>
-              <div className="border-t border-slate-100 my-1"></div>
+
               <button
                 onClick={() => {
                   setShowProfile(false);

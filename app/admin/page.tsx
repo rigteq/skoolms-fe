@@ -336,7 +336,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-10 py-3 bg-[#3b71ca] text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200/50"
+                  className="px-10 py-3 bg-[#4CAF50] text-white font-bold text-sm rounded-xl hover:bg-[#2E7D32] transition-all shadow-lg shadow-[#4CAF50]/30"
                 >
                   Add Student
                 </button>
