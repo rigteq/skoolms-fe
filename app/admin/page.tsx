@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     fetchDashboard();
   }, []);
 
-  // ✅ Helpers
+  //   Helpers
   const getInitials = (name: string) => {
     if (!name) return "??";
     const parts = name.trim().split(/\s+/);
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
     "rose",
   ];
 
-  // ✅ Loading UI
+  //   Loading UI
 
   if (loading) {
     return (
