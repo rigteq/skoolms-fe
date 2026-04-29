@@ -17,7 +17,6 @@ export default function Header() {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    console.log("Searching:", e.target.value);
   };
 
   const handleLogout = () => {
@@ -27,25 +26,18 @@ export default function Header() {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 sticky top-0">
-<<<<<<< HEAD
       {/* Search */}
       <div className="flex items-center w-96 relative group">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 group-focus-within:text-[#4CAF50] transition-colors" />
         <input
           type="text"
-          value={searchQuery}
+          value={search}
           onChange={handleSearch}
-          onFocus={() => {
-            if (searchQuery) setShowResults(true);
-          }}
-          placeholder="Search student, teacher..."
-          className="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all"
+          placeholder="Search schools by name or email..."
+          className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all placeholder:text-slate-400 font-medium"
         />
       </div>
 
-=======
-      <div></div>
->>>>>>> ee406cc (Rebase)
       {/* Right Side */}
       <div className="flex items-center space-x-6">
         {/* Notification */}
