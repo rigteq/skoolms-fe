@@ -438,6 +438,7 @@ export default function SchoolsPage() {
             {/* Modal */}
             <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
 
+<<<<<<< HEAD
               {/* Header */}
               <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div className="flex items-center gap-4">
@@ -449,6 +450,105 @@ export default function SchoolsPage() {
                   </h3>
                 </div>
 
+=======
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form
+              onSubmit={handleCreateSchool}
+              className="flex-1 overflow-y-auto p-8 custom-scrollbar"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* School Name */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    School Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={form.school_name}
+                    onChange={(e) =>
+                      setForm({ ...form, school_name: e.target.value })
+                    }
+                    placeholder="e.g. Oxford Public School"
+                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.school_name
+                        ? "border-rose-300 focus:ring-rose-50"
+                        : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                      }`}
+                  />
+                  {errors.school_name && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.school_name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    placeholder="admin@school.com"
+                    className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.email
+                        ? "border-rose-300 focus:ring-rose-50"
+                        : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                      }`}
+                  />
+                  {errors.email && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Contact Number
+                  </label>
+                  <input
+                    type="text"
+                    value={form.phone}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                    placeholder="+91"
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all"
+                  />
+                </div>
+
+                {/* Address */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Address
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={form.address}
+                    onChange={(e) =>
+                      setForm({ ...form, address: e.target.value })
+                    }
+                    placeholder="Full school address..."
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-10 flex gap-4">
+>>>>>>> ee406cc (Rebase)
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 transition-all"

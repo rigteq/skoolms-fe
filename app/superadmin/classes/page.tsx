@@ -81,6 +81,9 @@ export default function ClassesPage() {
         if (!form.class_name.trim()) {
             newErrors.class_name = "Class name is required";
             isValid = false;
+        } else if (!/^([1-9]|1[0-2])(-[A-Z])?$/.test(form.class_name.trim())) {
+            newErrors.class_name = "Format must be like 1, 12, 1-A, 12-B";
+            isValid = false;
         }
         if (!form.academic_year.trim()) {
             newErrors.academic_year = "Academic year is required";
@@ -453,12 +456,28 @@ export default function ClassesPage() {
                                                 }`}
                                         />
 
+<<<<<<< HEAD
                                         {errors.academic_year && (
                                             <p className="text-[9px] text-rose-500 font-bold ml-1">
                                                 {errors.academic_year}
                                             </p>
                                         )}
                                     </div>
+=======
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Class 10-A"
+                                        value={form.class_name}
+                                        onChange={(e) => {
+                                            let val = e.target.value.toUpperCase().replace(/[^0-9A-Z-]/g, '');
+                                            setForm({ ...form, class_name: val });
+                                        }}
+                                        className={`w-full px-5 py-3.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 outline-none transition-all ${errors.class_name
+                                            ? "border-rose-300 focus:ring-rose-50"
+                                            : "border-slate-200 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50]"
+                                            }`}
+                                    />
+>>>>>>> ee406cc (Rebase)
 
                                     {/* Teacher */}
                                     <div className="space-y-1.5 md:col-span-2">

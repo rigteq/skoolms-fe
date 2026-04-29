@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
@@ -13,63 +13,11 @@ export default function Header() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [showProfile, setShowProfile] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (!query) {
-      setShowResults(false);
-      return;
-    }
-
-    setShowResults(true);
-
-    if (allData.length === 0 && !isSearching) {
-      setIsSearching(true);
-      try {
-        const token = localStorage.getItem("token");
-
-        const [studentsRes, teachersRes] = await Promise.all([
-          fetch("http://localhost:5000/api/students", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("http://localhost:5000/api/teachers", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-
-        let students = [];
-        if (studentsRes.ok) students = await studentsRes.json();
-        if (students.data) students = students.data;
-
-        let teachers = [];
-        if (teachersRes.ok) teachers = await teachersRes.json();
-        if (teachers.data) teachers = teachers.data;
-        else if (teachers.teachers) teachers = teachers.teachers;
-
-        const combined = [
-          ...(Array.isArray(students)
-            ? students.map((s) => ({ ...s, type: "Student" }))
-            : []),
-          ...(Array.isArray(teachers)
-            ? teachers.map((t) => ({ ...t, type: "Teacher" }))
-            : []),
-        ];
-
-        setAllData(combined);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsSearching(false);
-      }
-    }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
   };
-
-  const filteredResults = allData.filter((item) =>
-    item.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -83,13 +31,10 @@ export default function Header() {
         <Search className="w-4 h-4 text-slate-400 absolute left-3 group-focus-within:text-[#4CAF50] transition-colors" />
         <input
           type="text"
-          value={searchQuery}
+          value={search}
           onChange={handleSearch}
-          onFocus={() => {
-            if (searchQuery) setShowResults(true);
-          }}
-          placeholder="Search student, teacher..."
-          className="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all"
+          placeholder="Search schools by name or email..."
+          className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:bg-white focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/20 outline-none transition-all placeholder:text-slate-400 font-medium"
         />
       </div>
 
@@ -115,15 +60,12 @@ export default function Header() {
 
           {showProfile && (
             <div className="absolute right-0 mt-3 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-20 overflow-hidden">
+
               <button
-                onClick={() => router.push("/profile")}
-                className="block w-full text-left px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium"
-              >
-                My Profile
-              </button>
-              <div className="border-t border-slate-100 my-1"></div>
-              <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setShowProfile(false);
+                  setShowLogoutModal(true);
+                }}
                 className="block w-full text-left px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-semibold"
               >
                 Sign Logout
@@ -132,6 +74,37 @@ export default function Header() {
           )}
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-red-100">
+                <LogOut className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Are you sure?</h3>
+              <p className="text-slate-500 mb-8 max-w-xs text-sm leading-relaxed">
+                You will be signed out from your session and need to login again.
+              </p>
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-100 hover:text-slate-900 transition-colors focus:ring-4 focus:ring-slate-100 focus:outline-none"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors focus:ring-4 focus:ring-red-100 focus:outline-none shadow-sm hover:shadow"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
