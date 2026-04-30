@@ -8,14 +8,7 @@ export default function AssignmentsPage() {
   const { searchQuery } = useSearchContext();
   const [localSearch, setLocalSearch] = useState("");
 
-  const [assignments] = useState([
-    { id: 1, studentName: "Aditya Verma", class: "10th Grade Math", marks: "85/100", assignmentNumber: "ASG-001", date: "2024-03-20" },
-    { id: 2, studentName: "Priya Singh", class: "12th Grade Science", marks: "Pending", assignmentNumber: "ASG-004", date: "2024-03-21" },
-    { id: 3, studentName: "Rahul Sharma", class: "11th Grade physics", marks: "92/100", assignmentNumber: "ASG-002", date: "2024-03-19" },
-    { id: 4, studentName: "Sanya Gupta", class: "9th Grade Math", marks: "78/100", assignmentNumber: "ASG-003", date: "2024-03-22" },
-    { id: 5, studentName: "Arjun Mehta", class: "10th Grade Math", marks: "Pending", assignmentNumber: "ASG-001", date: "2024-03-20" },
-    { id: 6, studentName: "Ishita Rao", class: "12th Grade Science", marks: "88/100", assignmentNumber: "ASG-004", date: "2024-03-21" },
-  ]);
+  const [assignments] = useState<Array<{ id: number; studentName: string; class: string; marks: string; assignmentNumber: string; date: string }>>([]);
 
   const query = localSearch || searchQuery;
   const filteredAssignments = assignments.filter(asg =>
