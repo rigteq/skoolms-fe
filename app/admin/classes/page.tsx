@@ -71,10 +71,6 @@ export default function ClassesPage() {
     }
   };
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
-
   const handleCreateClass = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
@@ -126,7 +122,7 @@ export default function ClassesPage() {
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const fetchTeachers = async (classList: ClassType[], schoolList: any[]) => {
+  const fetchTeachers = async () => {
     try {
       const token = localStorage.getItem("token");
 
@@ -140,53 +136,19 @@ export default function ClassesPage() {
       );
 
       const json = await res.json();
-      console.log("API response:", json);
+      console.log("Teachers API response:", json);
 
       const data = Array.isArray(json.data) ? json.data : [];
 
       const formatted = data.map((t: any) => ({
         id: t.id,
         full_name: t.full_name,
-        email: t.email,
-        phone: t.phone,
-        school_name: (() => {
-          if (t.school_name) return t.school_name;
-
-          const found = schoolList.find(
-            (s) => String(s.id) === String(t.school_id),
-          );
-          return found ? found.school_name : "N/A";
-        })(),
-        subject_specialization: t.subject_specialization || "",
-
-        classes: (() => {
-          // Case 1: classes = ["Grade 11", "Grade 12"]
-          if (Array.isArray(t.classes) && t.classes.length > 0) {
-            return t.classes.map((c: any) => ({
-              class_name: typeof c === "string" ? c : c.class_name,
-            }));
-          }
-
-          // Case 2: class_ids fallback
-          if (Array.isArray(t.class_ids) && t.class_ids.length > 0) {
-            return t.class_ids.map((id: any) => {
-              const found = classList.find((c) => String(c.id) === String(id));
-              return found
-                ? { class_name: found.class_name }
-                : { class_name: `Class ${id}` };
-            });
-          }
-
-          return [];
-        })(),
       }));
 
-      // THIS WAS MISSING
       setTeachers(formatted);
     } catch (error) {
       console.error("Error fetching teachers:", error);
-    } finally {
-      setLoading(false);
+      setTeachers([]);
     }
   };
 
