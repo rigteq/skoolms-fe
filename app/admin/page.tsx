@@ -9,7 +9,7 @@ export default function AdminDashboard() {
   //This stores dashboard values. Initially everything is 0 (default values). After API call → real data will come and replace this.
   const [dashboardData, setDashboardData] = useState({
     totalStudents: 0,
-    totalStaff: 0,
+    totalTeachers: 0,
     pendingFees: 0,
     attendanceToday: 0,
     latestStudents: [] as any[],
@@ -25,9 +25,16 @@ export default function AdminDashboard() {
         if (!token) return;
 
         // Fetch summary stats
-        const res = await fetch("http://localhost:5000/api/insights/summary", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/insights/summary`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
         if (res.ok) {
           const result = await res.json();
@@ -38,9 +45,13 @@ export default function AdminDashboard() {
 
         // Fetch latest students separately if not in summary
         const studentRes = await fetch(
-          "http://localhost:5000/api/students?limit=5&sort=created_at:desc",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/students?limit=5&sort=created_at:desc`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           },
         );
 
@@ -354,8 +365,8 @@ export default function AdminDashboard() {
             trend: "+12%",
           },
           {
-            label: "Total Staff",
-            value: dashboardData.totalStaff,
+            label: "Total Teachers",
+            value: dashboardData.totalTeachers,
             trend: "+2",
           },
           {
