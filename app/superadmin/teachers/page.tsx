@@ -1,6 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Search, Plus, Eye, Edit, Trash2, Filter, X, Loader2, CheckCircle, GraduationCap } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Eye,
+  Edit,
+  Trash2,
+  Filter,
+  X,
+  Loader2,
+  CheckCircle,
+  GraduationCap,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function TeachersPage() {
@@ -30,24 +41,26 @@ export default function TeachersPage() {
   };
 
   const toggleClassId = (cls: ClassType) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       class_ids: prev.class_ids.includes(cls.id)
-        ? prev.class_ids.filter(id => id !== cls.id)
-        : [...prev.class_ids, cls.id]
+        ? prev.class_ids.filter((id) => id !== cls.id)
+        : [...prev.class_ids, cls.id],
     }));
   };
-
 
   const fetchTeachers = async (classList: ClassType[], schoolList: any[]) => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/teachers", {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/teachers`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const json = await res.json();
       console.log("API response:", json);
@@ -62,7 +75,9 @@ export default function TeachersPage() {
         school_name: (() => {
           if (t.school_name) return t.school_name;
 
-          const found = schoolList.find(s => String(s.id) === String(t.school_id));
+          const found = schoolList.find(
+            (s) => String(s.id) === String(t.school_id),
+          );
           return found ? found.school_name : "N/A";
         })(),
         subject_specialization: t.subject_specialization || "",
@@ -71,14 +86,14 @@ export default function TeachersPage() {
           // Case 1: classes = ["Grade 11", "Grade 12"]
           if (Array.isArray(t.classes) && t.classes.length > 0) {
             return t.classes.map((c: any) => ({
-              class_name: typeof c === "string" ? c : c.class_name
+              class_name: typeof c === "string" ? c : c.class_name,
             }));
           }
 
           // Case 2: class_ids fallback
           if (Array.isArray(t.class_ids) && t.class_ids.length > 0) {
             return t.class_ids.map((id: any) => {
-              const found = classList.find(c => String(c.id) === String(id));
+              const found = classList.find((c) => String(c.id) === String(id));
               return found
                 ? { class_name: found.class_name }
                 : { class_name: `Class ${id}` };
@@ -91,7 +106,6 @@ export default function TeachersPage() {
 
       // THIS WAS MISSING
       setTeachers(formatted);
-
     } catch (error) {
       console.error("Error fetching teachers:", error);
     } finally {
@@ -114,13 +128,16 @@ export default function TeachersPage() {
     return new Date(dateString).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
-      year: "numeric"
+      year: "numeric",
     });
   };
 
-  const filteredTeachers = teachers.filter(teacher =>
-    teacher.subject_specialization?.toLowerCase().includes(pageSearch.toLowerCase()) ||
-    teacher.id?.toLowerCase().includes(pageSearch.toLowerCase())
+  const filteredTeachers = teachers.filter(
+    (teacher) =>
+      teacher.subject_specialization
+        ?.toLowerCase()
+        .includes(pageSearch.toLowerCase()) ||
+      teacher.id?.toLowerCase().includes(pageSearch.toLowerCase()),
   );
 
   const [errors, setErrors] = useState({
@@ -147,12 +164,11 @@ export default function TeachersPage() {
       if (json.success) {
         const uniqueClasses = json.data.filter(
           (cls: ClassType, index: number, self: ClassType[]) =>
-            index === self.findIndex(c => c.class_name === cls.class_name)
+            index === self.findIndex((c) => c.class_name === cls.class_name),
         );
 
         setClasses(uniqueClasses);
       }
-
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
@@ -247,7 +263,7 @@ export default function TeachersPage() {
       const emailExists = teachers.some(
         (t) =>
           t.email?.toLowerCase().trim() === form.email.toLowerCase().trim() &&
-          t.id !== editingId
+          t.id !== editingId,
       );
 
       if (emailExists) {
@@ -299,7 +315,7 @@ export default function TeachersPage() {
       setToastMessage(
         isEditMode
           ? "Teacher updated successfully."
-          : "Teacher added successfully."
+          : "Teacher added successfully.",
       );
 
       setShowSuccessToast(true);
@@ -327,7 +343,6 @@ export default function TeachersPage() {
         subject_specialization: "",
         class_ids: "",
       });
-
     } catch (err: any) {
       console.error(err);
       setToastMessage(err.message || "Failed to save teacher");
@@ -346,12 +361,15 @@ export default function TeachersPage() {
       email: teacher.email || "",
       phone: teacher.phone || "",
       school_id:
-        schools.find(s => s.school_name === teacher.school_name)?.id || "",
+        schools.find((s) => s.school_name === teacher.school_name)?.id || "",
       subject_specialization: teacher.subject_specialization || "",
-      class_ids: teacher.classes?.map((c: any) => {
-        const found = classes.find(cl => cl.class_name === c.class_name);
-        return found ? found.id : null;
-      }).filter(Boolean) || []
+      class_ids:
+        teacher.classes
+          ?.map((c: any) => {
+            const found = classes.find((cl) => cl.class_name === c.class_name);
+            return found ? found.id : null;
+          })
+          .filter(Boolean) || [],
     });
 
     setIsModalOpen(true);
@@ -376,11 +394,10 @@ export default function TeachersPage() {
         return;
       }
 
-      setTeachers(prev => prev.filter(t => t.id !== id));
+      setTeachers((prev) => prev.filter((t) => t.id !== id));
       setToastMessage("Teacher has been deleted successfully.");
       setShowSuccessToast(true);
       setTimeout(() => setShowSuccessToast(false), 3000);
-
     } catch (error) {
       console.error(error);
       alert("Delete failed");
@@ -405,8 +422,13 @@ export default function TeachersPage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Teachers Management</h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium italic">Manage faculty records and classroom assignments across your institution.</p>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+            Teachers Management
+          </h1>
+          <p className="text-slate-500 text-sm mt-1 font-medium italic">
+            Manage faculty records and classroom assignments across your
+            institution.
+          </p>
         </div>
         <button
           onClick={() => {
@@ -431,7 +453,6 @@ export default function TeachersPage() {
 
       {/* Table Container Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-
         {/* Search & Action Bar */}
         <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex flex-col md:flex-row justify-between gap-4">
           <div className="relative w-full md:w-96">
@@ -472,7 +493,6 @@ export default function TeachersPage() {
                 <tr>
                   <td colSpan={8} className="px-8 py-32 text-center">
                     <div className="flex flex-col items-center justify-center gap-4">
-
                       {/* Spinner */}
                       <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-[#4CAF50] animate-spin"></div>
 
@@ -485,29 +505,24 @@ export default function TeachersPage() {
                       <p className="text-sm text-slate-400 italic">
                         Fetching teacher records from server
                       </p>
-
                     </div>
                   </td>
                 </tr>
               ) : filteredTeachers.length > 0 ? (
                 filteredTeachers.map((teacher) => (
-                  <tr key={teacher.id} className="hover:bg-slate-50/40 transition-all group/row">
-
+                  <tr
+                    key={teacher.id}
+                    className="hover:bg-slate-50/40 transition-all group/row"
+                  >
                     <td className="px-6 py-4">
                       {teacher.id?.substring(0, 8) || "N/A"}
                     </td>
 
-                    <td className="px-6 py-4">
-                      {teacher.full_name || "N/A"}
-                    </td>
+                    <td className="px-6 py-4">{teacher.full_name || "N/A"}</td>
 
-                    <td className="px-6 py-4">
-                      {teacher.email || "N/A"}
-                    </td>
+                    <td className="px-6 py-4">{teacher.email || "N/A"}</td>
 
-                    <td className="px-6 py-4">
-                      {teacher.phone || "N/A"}
-                    </td>
+                    <td className="px-6 py-4">{teacher.phone || "N/A"}</td>
 
                     <td className="px-6 py-4">
                       {teacher.school_name || "N/A"}
@@ -520,8 +535,10 @@ export default function TeachersPage() {
                     <td className="px-6 py-4">
                       {teacher.classes?.length > 0
                         ? teacher.classes
-                          .map((c: any) => typeof c === "string" ? c : c.class_name)
-                          .join(", ")
+                            .map((c: any) =>
+                              typeof c === "string" ? c : c.class_name,
+                            )
+                            .join(", ")
                         : "N/A"}
                     </td>
 
@@ -547,8 +564,12 @@ export default function TeachersPage() {
               ) : (
                 <tr>
                   <td colSpan={8} className="px-8 py-32 text-center">
-                    <h3 className="text-lg font-bold text-slate-400">No teachers found</h3>
-                    <p className="text-slate-400 text-sm italic">Try adjusting your search criteria or subject filters.</p>
+                    <h3 className="text-lg font-bold text-slate-400">
+                      No teachers found
+                    </h3>
+                    <p className="text-slate-400 text-sm italic">
+                      Try adjusting your search criteria or subject filters.
+                    </p>
                   </td>
                 </tr>
               )}
@@ -558,245 +579,262 @@ export default function TeachersPage() {
 
         {/* Pagination Simulation */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/10 flex items-center justify-between text-xs text-slate-500 font-bold px-8">
-          <span>Showing {filteredTeachers.length} of {teachers.length} entries</span>
+          <span>
+            Showing {filteredTeachers.length} of {teachers.length} entries
+          </span>
           <div className="flex gap-2">
-            <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-40" disabled>Previous</button>
-            <button className="px-3 py-1.5 bg-[#4CAF50] text-white rounded-lg shadow-sm">1</button>
-            <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors">Next</button>
+            <button
+              className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors disabled:opacity-40"
+              disabled
+            >
+              Previous
+            </button>
+            <button className="px-3 py-1.5 bg-[#4CAF50] text-white rounded-lg shadow-sm">
+              1
+            </button>
+            <button className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+              Next
+            </button>
           </div>
         </div>
       </div>
 
       {/* Modal Implementation */}
-      {
-        isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in"
+            onClick={() => {
+              setIsModalOpen(false);
+              setIsEditMode(false);
+              setEditingId(null);
+            }}
+          />
 
-            {/* Overlay */}
-            <div
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in"
-              onClick={() => {
-                setIsModalOpen(false);
-                setIsEditMode(false);
-                setEditingId(null);
-              }}
-            />
+          {/* Modal */}
+          <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+            {/* Header */}
+            <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+                <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
+                  {isEditMode ? "Edit Teacher" : "New Teacher"}
+                </h3>
+              </div>
 
-            {/* Modal */}
-            <div className="relative bg-white w-full max-w-2xl max-h-[90vh] rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setIsEditMode(false);
+                  setEditingId(null);
+                }}
+                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
 
-              {/* Header */}
-              <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-[#4CAF50] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#4CAF50]/20">
-                    <GraduationCap className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-extrabold text-slate-800 text-xl uppercase tracking-widest">
-                    {isEditMode ? "Edit Teacher" : "New Teacher"}
-                  </h3>
+            {/* Form */}
+            <form
+              onSubmit={handleAddTeacher}
+              className="flex-1 overflow-y-auto p-8 custom-scrollbar"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Full Name */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Teacher Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Full name of the teacher"
+                    value={form.full_name}
+                    onChange={(e) =>
+                      setForm({ ...form, full_name: e.target.value })
+                    }
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
+                  />
+                  {errors.full_name && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.full_name}
+                    </p>
+                  )}
                 </div>
 
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Email Address <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="example@school.com"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
+                  />
+                  {errors.email && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Contact Number
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="+91"
+                    value={form.phone}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+                      if (value.length <= 10) {
+                        setForm({ ...form, phone: value });
+                      }
+                    }}
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
+                  />
+                  {errors.phone && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.phone}
+                    </p>
+                  )}
+                </div>
+
+                {/* School */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    School <span className="text-rose-500">*</span>
+                  </label>
+
+                  <div className="relative">
+                    <select
+                      value={form.school_id}
+                      onChange={(e) =>
+                        setForm({ ...form, school_id: e.target.value })
+                      }
+                      className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none appearance-none"
+                    >
+                      <option value="">Select School</option>
+                      {schools.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.school_name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <GraduationCap className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                  {errors.school_id && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.school_id}
+                    </p>
+                  )}
+                </div>
+
+                {/* Subject */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Subject Specialization{" "}
+                    <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Mathematics"
+                    value={form.subject_specialization}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        subject_specialization: e.target.value,
+                      })
+                    }
+                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
+                  />
+                  {errors.subject_specialization && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.subject_specialization}
+                    </p>
+                  )}
+                </div>
+
+                {/* Classes */}
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Assign Classes
+                  </label>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    {classes.map((cls) => {
+                      const selected = form.class_ids.includes(cls.id);
+
+                      return (
+                        <button
+                          key={cls.id}
+                          type="button"
+                          onClick={() => toggleClassId(cls)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all
+                ${
+                  selected
+                    ? "bg-[#4CAF50] text-white border-[#4CAF50]"
+                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                }`}
+                        >
+                          {cls.class_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {errors.class_ids && (
+                    <p className="text-[9px] text-rose-500 font-bold ml-1">
+                      {errors.class_ids}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-10 flex gap-4">
                 <button
+                  type="button"
                   onClick={() => {
                     setIsModalOpen(false);
                     setIsEditMode(false);
                     setEditingId(null);
                   }}
-                  className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-200 transition-all"
+                  className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50"
                 >
-                  <X className="w-6 h-6" />
+                  Cancel Teacher
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl flex items-center justify-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-3 animate-spin" />
+                      {isEditMode ? "Updating..." : "Creating..."}
+                    </>
+                  ) : isEditMode ? (
+                    "Edit Teacher"
+                  ) : (
+                    "Create Teacher"
+                  )}
                 </button>
               </div>
-
-              {/* Form */}
-              <form onSubmit={handleAddTeacher} className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                  {/* Full Name */}
-                  <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Teacher Name <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Full name of the teacher"
-                      value={form.full_name}
-                      onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
-                    />
-                    {errors.full_name && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.full_name}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Email Address <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="example@school.com"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
-                    />
-                    {errors.email && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Contact Number
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="+91"
-                      value={form.phone}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, "");
-                        if (value.length <= 10) {
-                          setForm({ ...form, phone: value });
-                        }
-                      }}
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
-                    />
-                    {errors.phone && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.phone}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* School */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      School <span className="text-rose-500">*</span>
-                    </label>
-
-                    <div className="relative">
-                      <select
-                        value={form.school_id}
-                        onChange={(e) => setForm({ ...form, school_id: e.target.value })}
-                        className="w-full pl-5 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none appearance-none"
-                      >
-                        <option value="">Select School</option>
-                        {schools.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.school_name}
-                          </option>
-                        ))}
-                      </select>
-
-                      <GraduationCap className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    </div>
-                    {errors.school_id && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.school_id}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Subject */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Subject Specialization <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Mathematics"
-                      value={form.subject_specialization}
-                      onChange={(e) =>
-                        setForm({ ...form, subject_specialization: e.target.value })
-                      }
-                      className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:ring-4 focus:ring-[#4CAF50]/10 focus:border-[#4CAF50] outline-none"
-                    />
-                    {errors.subject_specialization && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.subject_specialization}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Classes */}
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Assign Classes
-                    </label>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      {classes.map((cls) => {
-                        const selected = form.class_ids.includes(cls.id);
-
-                        return (
-                          <button
-                            key={cls.id}
-                            type="button"
-                            onClick={() => toggleClassId(cls)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all
-                ${selected
-                                ? "bg-[#4CAF50] text-white border-[#4CAF50]"
-                                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                              }`}
-                          >
-                            {cls.class_name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {errors.class_ids && (
-                      <p className="text-[9px] text-rose-500 font-bold ml-1">
-                        {errors.class_ids}
-                      </p>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* Footer */}
-                <div className="mt-10 flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setIsEditMode(false);
-                      setEditingId(null);
-                    }}
-                    className="flex-1 px-6 py-4 border border-slate-200 text-slate-500 font-extrabold text-[12px] uppercase tracking-widest rounded-2xl hover:bg-slate-50"
-                  >
-                    Cancel Teacher
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex-[2] px-6 py-4 bg-gradient-to-r from-[#4CAF50] to-[#2E7D32] text-white font-extrabold text-[12px] uppercase tracking-widest rounded-2xl shadow-xl flex items-center justify-center"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-3 animate-spin" />
-                        {isEditMode ? "Updating..." : "Creating..."}
-                      </>
-                    ) : (
-
-                      isEditMode ? "Edit Teacher" : "Create Teacher"
-
-                    )}
-                  </button>
-                </div>
-
-              </form>
-            </div>
-          </div >
-        )
-      }
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Success Toast */}
       {showSuccessToast && (
@@ -807,14 +845,11 @@ export default function TeachersPage() {
             </div>
             <div>
               <p className="font-bold text-sm">Success!</p>
-              <p className="text-slate-400 text-xs mt-0.5">
-                {toastMessage}
-              </p>
+              <p className="text-slate-400 text-xs mt-0.5">{toastMessage}</p>
             </div>
           </div>
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
